@@ -417,11 +417,13 @@ const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 		margin-top: 0.6em;
 	}
 	.drawer-nav a {
+		display: block;
 		padding: 0.8em 0.6em;
 		color: rgb(var(--gray-dark));
 		text-decoration: none;
 		border-radius: 10px;
 		font-size: 1em;
+		text-align: center;
 		transition: background 0.15s ease, color 0.15s ease;
 	}
 	.drawer-nav a:hover {
@@ -429,40 +431,39 @@ const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 		color: var(--accent);
 	}
 	.drawer-nav a.sub {
-		padding-left: 2.4em;
 		font-size: 0.92em;
 		color: rgb(var(--gray));
-		position: relative;
 	}
 	.drawer-nav a.sub::before {
-		content: '└';
-		position: absolute;
-		left: 1em;
+		content: '└ ';
 		opacity: 0.5;
+		margin-right: 0.2em;
 	}
-	/* —— 可折叠组（博客 + 分类/标签） —— */
+	/* —— 可折叠组（博客 + 分类/标签）：caret 绝对定位，不影响主链接的居中 —— */
 	.drawer-row {
-		display: flex;
-		align-items: center;
-	}
-	.drawer-row > a {
-		flex: 1;
+		position: relative;
 	}
 	.drawer-caret {
+		position: absolute;
+		right: 0.4em;
+		top: 50%;
+		transform: translateY(-50%);
 		background: transparent;
-		border: none;
-		padding: 0.6em 0.8em;
-		font-size: 0.9em;
+		border: 1px solid rgba(0, 0, 0, 0.08);
+		padding: 0.2em 0.5em;
+		font-size: 0.75em;
+		line-height: 1;
 		color: rgb(var(--gray));
 		cursor: pointer;
-		border-radius: 8px;
-		transition: background 0.15s ease, transform 0.2s ease;
+		border-radius: 6px;
+		transition: background 0.15s ease, transform 0.2s ease, border-color 0.15s ease;
 	}
 	.drawer-caret:hover {
 		background: rgba(0, 0, 0, 0.05);
+		border-color: rgba(0, 0, 0, 0.15);
 	}
 	.drawer-caret[aria-expanded='true'] {
-		transform: rotate(180deg);
+		transform: translateY(-50%) rotate(180deg);
 	}
 	.drawer-sub {
 		max-height: 0;
