@@ -216,20 +216,52 @@ const postsWithStats = page.data.map((p) => ({
 				box-shadow: 0 4px 12px rgba(31, 38, 135, 0.15);
 			}
 
-			/* —— 平板 (≤960)：sidebar 已隐藏，卡片图缩小 —— */
+			/* —— 置顶博文：全宽大图 + 大标题 + 暖色背景，凸显「置顶」 —— */
+			.post-card.featured a {
+				grid-template-columns: 1fr;
+				padding: 1.5em;
+				background: linear-gradient(135deg, rgba(255, 240, 200, 0.55), rgba(255, 255, 255, 0.55));
+				border: 1px solid rgba(255, 180, 80, 0.45);
+				box-shadow: 0 8px 32px rgba(255, 180, 80, 0.15);
+			}
+			.post-card.featured .card-media {
+				aspect-ratio: 21 / 9;
+				margin-bottom: 0.4em;
+				order: 0 !important;
+			}
+			.post-card.featured .card-body {
+				justify-content: flex-start;
+			}
+			.post-card.featured .title {
+				font-size: 1.55em;
+			}
+			.post-card.featured .pin-badge {
+				font-size: 0.65em;
+			}
+			.post-card.featured a:hover {
+				background: linear-gradient(135deg, rgba(255, 230, 180, 0.7), rgba(255, 255, 255, 0.75));
+			}
+
+			/* —— 平板 (≤960)：sidebar 已隐藏，卡片图缩小，奇偶交替保留 —— */
 			@media (max-width: 960px) {
 				main {
 					grid-template-columns: 1fr;
 				}
-				.post-card a,
-				.post-card:nth-child(even) a {
+				.post-card a {
 					grid-template-columns: 220px minmax(0, 1fr);
 				}
-				.post-card:nth-child(even) .card-media {
-					order: 0;
+				.post-card:nth-child(even) a {
+					grid-template-columns: minmax(0, 1fr) 220px;
+				}
+				/* 置顶仍保持全宽大图 */
+				.post-card.featured a {
+					grid-template-columns: 1fr;
+				}
+				.post-card.featured .title {
+					font-size: 1.35em;
 				}
 			}
-			/* —— 移动 (≤640)：图上文下 —— */
+			/* —— 移动 (≤640)：图上文下，所有卡片统一 —— */
 			@media (max-width: 640px) {
 				.posts-card {
 					padding: 1.2em 1em;
@@ -239,11 +271,17 @@ const postsWithStats = page.data.map((p) => ({
 					grid-template-columns: 1fr;
 					gap: 0.8em;
 				}
+				.post-card:nth-child(even) .card-media {
+					order: 0;
+				}
 				.card-media {
 					aspect-ratio: 16 / 9;
 				}
 				.title {
 					font-size: 1.1em;
+				}
+				.post-card.featured .title {
+					font-size: 1.2em;
 				}
 			}
 			/* —— 减少动画偏好用户：跳过 wiggle —— */
@@ -268,7 +306,7 @@ const postsWithStats = page.data.map((p) => ({
 				<ul>
 					{
 						postsWithStats.map(({ post, stats }) => (
-							<li class="post-card">
+							<li class={`post-card${post.data.featured ? ' featured' : ''}`}>
 								<a href={`/blog/${post.id}/`}>
 									<div class="card-media">
 										{post.data.heroImage ? (
