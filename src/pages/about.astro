@@ -1,37 +1,439 @@
 ---
-import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
-import Layout from '../layouts/BlogPost.astro';
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import elysia from '../assets/elysia.png';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+const posts = await getCollection('blog');
+const categoryCount = new Set(posts.map((p) => p.data.category)).size;
+const tagCount = new Set(posts.flatMap((p) => p.data.tags)).size;
+
+// 主要项目高亮（手动挑 3 个对应博文 slug）
+const featured = [
+	{ slug: 'kng', emoji: '🧠', name: 'KNG', desc: '让 Claude Code 越用越准的知识驱动框架' },
+	{ slug: 'lacuna', emoji: '📖', name: 'Lacuna', desc: '半生成式叙事引擎——作者写骨架，LLM 填留白' },
+	{
+		slug: 'feishu-doc-monitor',
+		emoji: '📄',
+		name: 'feishu-doc-monitor',
+		desc: '飞书 Wiki 子树文档变更监控，DFS + SQLite + 卡片通知',
+	},
+];
+
+// 工具箱分类
+const stack = [
+	{ name: '语言', items: ['Python', 'JavaScript', 'TypeScript', 'C#'] },
+	{ name: 'AI', items: ['Claude Code', 'LLM Agent', 'KNG 框架', 'Anthropic SDK'] },
+	{ name: '测试自动化', items: ['Selenium', 'pytest', 'YOLO + CV', 'MaaFramework'] },
+	{ name: '深度学习', items: ['PyTorch', 'CNN', 'LSTM', 'STFT 音频'] },
+	{ name: '前端 / 站点', items: ['Astro', 'GitHub Pages', 'GitHub Actions'] },
+];
 ---
 
-<Layout
-	title="关于我"
-	description="WizardHeHeJun 的个人介绍"
-	pubDate={new Date()}
-	heroImage={AboutHeroImage}
->
-	<p>
-		你好，我是 <strong>WizardHeHeJun</strong>。这里是我用来放项目分享、技术笔记和碎碎念的小角落。
-	</p>
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`关于 · ${SITE_TITLE}`} description="WizardHeHeJun 的自我介绍" />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<!-- ━━━━━━━━━━ Hero ━━━━━━━━━━ -->
+			<section class="hero">
+				<Image src={elysia} width={140} height={140} alt="头像" class="avatar" />
+				<h1 class="name">WizardHeHeJun</h1>
+				<p class="romaji">WizardryLaw_呵呵君HJ</p>
 
-	<p>
-		写博客的初衷很简单——很多想法、踩过的坑、灵光乍现的瞬间，如果不写下来，就会被时间冲走。与其凭借
-		记忆力对抗遗忘，不如把它们交给文字。
-	</p>
+				<div class="pills">
+					<span class="pill">🤖 AI 工程师</span>
+					<span class="pill">🧪 测试自动化</span>
+					<span class="pill">🎮 游戏开发</span>
+					<span class="pill">✨ ACG 爱好者</span>
+				</div>
 
-	<p>
-		这里会出现的内容：
-	</p>
-	<ul>
-		<li>正在做的项目和它们背后的思路</li>
-		<li>技术上的小发现和踩坑记录</li>
-		<li>偶尔的生活随感</li>
-	</ul>
+				<div class="socials">
+					<a href="https://github.com/WizardHeHeJun" target="_blank" rel="noopener">GitHub</a>
+					<a href="https://space.bilibili.com/40752109" target="_blank" rel="noopener">哔哩哔哩</a>
+					<a href="https://x.com/wizardhehejun" target="_blank" rel="noopener">X</a>
+				</div>
 
-	<p>
-		如果你看到的某句话恰好对你有用，那就是我写这些字最满意的回报啦。
-	</p>
+				<div class="stats">
+					<div><b>{posts.length}</b><span>文章</span></div>
+					<div><b>{categoryCount}</b><span>分类</span></div>
+					<div><b>{tagCount}</b><span>标签</span></div>
+				</div>
+			</section>
 
-	<p>
-		<em>（这一页随时可以改，源文件在 <code>src/pages/about.astro</code>。）</em>
-	</p>
-</Layout>
+			<!-- ━━━━━━━━━━ 自我介绍 ━━━━━━━━━━ -->
+			<section class="card">
+				<h2>👋 你好</h2>
+				<p>
+					我是 <strong>WizardHeHeJun</strong>，本职是某游戏厂的<strong>测试工程师</strong>。
+					工作里跟 bug、自动化测试、CV+YOLO 的黑盒测试平台打交道；下班后折腾 AI Agent、知识框架、
+					和一些不怎么实用但有意思的小项目。
+				</p>
+				<p>
+					这个博客是我的「**数字背包**」——装着写过的代码、想通的事，还有一些不想被时间冲走的碎碎念。
+				</p>
+				<p>
+					如果你恰好读到对你有用的内容，那就是写这些字最满意的回报啦——
+					<em>「不是吗？」</em>
+				</p>
+			</section>
+
+			<!-- ━━━━━━━━━━ 工具箱 ━━━━━━━━━━ -->
+			<section class="card">
+				<h2>🛠️ 工具箱</h2>
+				<p class="muted">日常用得多 / 真正能写出东西的，不是「面试我会用」那种列表。</p>
+				<div class="stack">
+					{
+						stack.map((g) => (
+							<div class="stack-row">
+								<div class="stack-label">{g.name}</div>
+								<div class="stack-chips">
+									{g.items.map((it) => (
+										<span class="chip">{it}</span>
+									))}
+								</div>
+							</div>
+						))
+					}
+				</div>
+			</section>
+
+			<!-- ━━━━━━━━━━ 主要项目 ━━━━━━━━━━ -->
+			<section class="card">
+				<h2>🌟 主要项目</h2>
+				<p class="muted">挑了 3 个开源的代表作，详细介绍各自有博文。</p>
+				<div class="proj-grid">
+					{
+						featured.map((p) => (
+							<a class="proj" href={`/blog/${p.slug}/`}>
+								<div class="proj-emoji">{p.emoji}</div>
+								<div class="proj-name">{p.name}</div>
+								<div class="proj-desc">{p.desc}</div>
+							</a>
+						))
+					}
+				</div>
+				<p class="more-link">
+					<a href="/blog/">看所有文章 →</a>
+				</p>
+			</section>
+
+			<!-- ━━━━━━━━━━ 日常碎碎念 ━━━━━━━━━━ -->
+			<section class="card">
+				<h2>🎮 日常碎碎念</h2>
+				<ul class="facts">
+					<li>🐛 工作上跟 bug 斗智斗勇——「修不完，根本修不完」</li>
+					<li>🤖 业余沉迷 Claude Code + Agent 框架，把 AI 训成自己的副驾驶</li>
+					<li>🌸 米哈游精神股东：崩坏 3 老玩家，爱莉希雅本命（看头像）</li>
+					<li>🎵 写代码必须有 BGM，喜欢 ACG / Lo-Fi</li>
+					<li>📚 偶尔写写技术笔记，但更多时候是「写完了再说」</li>
+					<li>☕ 一杯咖啡能熬到凌晨，第二天起床后悔</li>
+				</ul>
+			</section>
+
+			<!-- ━━━━━━━━━━ 关于这个站 ━━━━━━━━━━ -->
+			<section class="card">
+				<h2>🏠 关于这个站</h2>
+				<ul class="meta-list">
+					<li>
+						<b>构建</b>：<code>Astro 6</code> + <code>GitHub Pages</code> +
+						<code>GitHub Actions</code> 自动部署
+					</li>
+					<li>
+						<b>主题</b>：自己手搓的毛玻璃风（<code>backdrop-filter</code> + 渐变 +
+						海边小姐姐背景图）
+					</li>
+					<li>
+						<b>字体</b>：霞鹜文楷（LXGW WenKai Screen），通过 jsDelivr CDN 按字符 chunk 加载
+					</li>
+					<li><b>搜索</b>：Pagefind 静态全文索引——零运维</li>
+					<li><b>音乐</b>：APlayer + MetingJS，默认 ACG 公共歌单</li>
+					<li>
+						<b>开源</b>：完整代码在
+						<a href="https://github.com/WizardHeHeJun/WizardHeHeJun.github.io" target="_blank">
+							GitHub
+						</a>，欢迎 fork
+					</li>
+				</ul>
+				<p class="more-link">
+					<a href="/blog/building-this-blog/">完整搭建过程 →</a>
+				</p>
+			</section>
+		</main>
+		<Footer />
+
+		<style>
+			main {
+				width: 800px;
+				background: transparent;
+				backdrop-filter: none;
+				-webkit-backdrop-filter: none;
+				border: none;
+				border-radius: 0;
+				box-shadow: none;
+				padding: 1em;
+				display: flex;
+				flex-direction: column;
+				gap: 1.2em;
+			}
+
+			/* —— Hero —— */
+			.hero {
+				text-align: center;
+				padding: 2.2em 1.6em;
+				background: rgba(255, 255, 255, 0.55);
+				backdrop-filter: blur(18px) saturate(180%);
+				-webkit-backdrop-filter: blur(18px) saturate(180%);
+				border: 1px solid rgba(255, 255, 255, 0.45);
+				border-radius: 18px;
+				box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+			}
+			.avatar {
+				display: block;
+				margin: 0 auto 0.6em;
+				width: 110px;
+				height: 110px;
+				border-radius: 50%;
+				object-fit: cover;
+				border: 4px solid rgba(255, 255, 255, 0.7);
+				box-shadow:
+					0 0 0 4px rgba(194, 128, 255, 0.2),
+					0 8px 24px rgba(31, 38, 135, 0.18);
+			}
+			.name {
+				font-size: 2.4em;
+				margin: 0.2em 0 0;
+				font-weight: 800;
+				color: rgb(var(--gray-dark));
+			}
+			.romaji {
+				margin: 0.1em 0 1em;
+				color: rgb(var(--gray));
+				letter-spacing: 0.08em;
+				font-size: 0.95em;
+			}
+			.pills {
+				display: flex;
+				justify-content: center;
+				flex-wrap: wrap;
+				gap: 0.5em;
+				margin-bottom: 1em;
+			}
+			.pill {
+				display: inline-block;
+				padding: 0.3em 0.9em;
+				background: rgba(255, 255, 255, 0.7);
+				border: 1px solid rgba(255, 255, 255, 0.8);
+				border-radius: 999px;
+				font-size: 0.85em;
+				color: rgb(var(--gray-dark));
+			}
+			.socials {
+				display: flex;
+				justify-content: center;
+				gap: 0.6em;
+				margin-bottom: 1.2em;
+				flex-wrap: wrap;
+			}
+			.socials a {
+				font-size: 0.85em;
+				padding: 0.3em 0.8em;
+				background: rgba(35, 55, 255, 0.08);
+				border-radius: 999px;
+				color: var(--accent);
+				text-decoration: none;
+				transition: background 0.15s ease;
+			}
+			.socials a:hover {
+				background: rgba(35, 55, 255, 0.18);
+			}
+			.stats {
+				display: flex;
+				justify-content: center;
+				gap: 2em;
+				padding-top: 1em;
+				border-top: 1px dashed rgba(0, 0, 0, 0.08);
+			}
+			.stats div {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+			.stats b {
+				font-size: 1.6em;
+				font-weight: 700;
+				color: var(--accent);
+				line-height: 1;
+			}
+			.stats span {
+				font-size: 0.78em;
+				color: rgb(var(--gray));
+				margin-top: 0.3em;
+			}
+
+			/* —— 通用 card —— */
+			.card {
+				padding: 1.6em 1.8em;
+				background: rgba(255, 255, 255, 0.5);
+				backdrop-filter: blur(16px) saturate(170%);
+				-webkit-backdrop-filter: blur(16px) saturate(170%);
+				border: 1px solid rgba(255, 255, 255, 0.45);
+				border-radius: 18px;
+				box-shadow: 0 8px 32px rgba(31, 38, 135, 0.12);
+			}
+			.card h2 {
+				margin: 0 0 0.6em;
+				font-size: 1.4em;
+			}
+			.card p {
+				margin: 0.5em 0;
+				line-height: 1.7;
+			}
+			.muted {
+				color: rgb(var(--gray));
+				font-size: 0.9em;
+			}
+
+			/* —— 工具箱 —— */
+			.stack {
+				display: flex;
+				flex-direction: column;
+				gap: 0.6em;
+				margin-top: 0.5em;
+			}
+			.stack-row {
+				display: flex;
+				gap: 0.8em;
+				align-items: flex-start;
+			}
+			.stack-label {
+				min-width: 6em;
+				padding-top: 0.25em;
+				color: rgb(var(--gray));
+				font-size: 0.9em;
+				flex-shrink: 0;
+			}
+			.stack-chips {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.4em;
+			}
+			.chip {
+				display: inline-block;
+				padding: 0.2em 0.7em;
+				background: rgba(35, 55, 255, 0.07);
+				border: 1px solid rgba(35, 55, 255, 0.15);
+				border-radius: 6px;
+				font-size: 0.85em;
+				color: var(--accent);
+			}
+
+			/* —— 主要项目 —— */
+			.proj-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 0.8em;
+				margin-top: 0.5em;
+			}
+			.proj {
+				display: flex;
+				flex-direction: column;
+				padding: 1em;
+				background: rgba(255, 255, 255, 0.45);
+				border: 1px solid rgba(255, 255, 255, 0.5);
+				border-radius: 12px;
+				color: rgb(var(--gray-dark));
+				text-decoration: none;
+				transition: transform 0.15s ease, background 0.15s ease;
+			}
+			.proj:hover {
+				transform: translateY(-3px);
+				background: rgba(255, 255, 255, 0.75);
+			}
+			.proj-emoji {
+				font-size: 1.8em;
+				margin-bottom: 0.2em;
+			}
+			.proj-name {
+				font-weight: 700;
+				font-size: 1.05em;
+				color: var(--accent);
+				margin-bottom: 0.3em;
+			}
+			.proj-desc {
+				font-size: 0.85em;
+				color: rgb(var(--gray));
+				line-height: 1.5;
+			}
+			.more-link {
+				margin-top: 1em !important;
+				text-align: right;
+			}
+			.more-link a {
+				color: rgb(var(--gray));
+				font-size: 0.88em;
+				text-decoration: none;
+			}
+			.more-link a:hover {
+				color: var(--accent);
+			}
+
+			/* —— 日常 —— */
+			.facts {
+				margin: 0.5em 0;
+				padding: 0;
+				list-style: none;
+				display: flex;
+				flex-direction: column;
+				gap: 0.5em;
+			}
+			.facts li {
+				padding: 0.3em 0;
+				color: rgb(var(--gray-dark));
+				line-height: 1.6;
+			}
+
+			/* —— 站点元信息 —— */
+			.meta-list {
+				margin: 0.5em 0;
+				padding-left: 1.3em;
+				color: rgb(var(--gray-dark));
+				line-height: 1.9;
+			}
+			.meta-list code {
+				padding: 0.05em 0.4em;
+				background: rgba(0, 0, 0, 0.06);
+				border-radius: 4px;
+				font-size: 0.9em;
+			}
+			.meta-list a {
+				color: var(--accent);
+			}
+
+			@media (max-width: 720px) {
+				main {
+					width: 100%;
+				}
+				.name {
+					font-size: 1.8em;
+				}
+				.stats {
+					gap: 1.2em;
+				}
+				.stack-row {
+					flex-direction: column;
+					gap: 0.3em;
+				}
+				.stack-label {
+					min-width: auto;
+				}
+			}
+		</style>
+	</body>
+</html>
