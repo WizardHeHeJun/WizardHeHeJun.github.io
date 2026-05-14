@@ -155,4 +155,19 @@ const tagCount = new Set(posts.flatMap((p) => p.data.tags)).size;
 	.recent-list a:hover {
 		color: var(--accent);
 	}
+	/* —— 平板：sidebar 折到顶部时改横向 3 列，不浪费纵向 —— */
+	@media (max-width: 960px) {
+		.sidebar {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			gap: 0.8em;
+		}
+	}
+	/* —— 手机：恢复单列 —— */
+	@media (max-width: 640px) {
+		.sidebar {
+			display: flex;
+			flex-direction: column;
+		}
+	}
 </style>

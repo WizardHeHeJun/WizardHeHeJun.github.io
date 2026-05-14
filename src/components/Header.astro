@@ -91,9 +91,39 @@ import HeaderLink from './HeaderLink.astro';
 	.social-links a {
 		display: flex;
 	}
+	/* —— 平板：压缩 nav 间距 —— */
+	@media (max-width: 960px) {
+		header {
+			padding: 0 0.6em;
+		}
+		nav a {
+			padding: 1em 0.35em;
+		}
+		.search-trigger {
+			padding: 1em 0.35em;
+		}
+	}
+	/* —— 手机：藏掉社交图标 —— */
 	@media (max-width: 720px) {
 		.social-links {
 			display: none;
+		}
+	}
+	/* —— 超窄屏：藏站名，nav 居中铺满 —— */
+	@media (max-width: 480px) {
+		header {
+			padding: 0 0.4em;
+		}
+		nav {
+			justify-content: center;
+		}
+		h2 {
+			display: none;
+		}
+		nav a,
+		.search-trigger {
+			padding: 0.9em 0.3em;
+			font-size: 0.95em;
 		}
 	}
 	/* —— 二级 dropdown —— */

@@ -36,7 +36,7 @@ const postsWithStats = page.data.map((p) => ({
 		/>
 		<style>
 			main {
-				width: 1100px;
+				width: min(1100px, 100% - 2em);
 				background: transparent;
 				backdrop-filter: none;
 				-webkit-backdrop-filter: none;
@@ -48,6 +48,12 @@ const postsWithStats = page.data.map((p) => ({
 				grid-template-columns: 280px minmax(0, 1fr);
 				gap: 1.5em;
 				align-items: start;
+			}
+			@media (min-width: 1400px) {
+				main {
+					width: min(1280px, 100% - 4em);
+					grid-template-columns: 300px minmax(0, 1fr);
+				}
 			}
 			.posts-card {
 				padding: 1.8em 1.6em;
@@ -72,7 +78,7 @@ const postsWithStats = page.data.map((p) => ({
 				padding: 0;
 			}
 			ul li {
-				width: calc(50% - 1rem);
+				width: min(calc(50% - 1rem), 100%);
 			}
 			ul li * {
 				text-decoration: none;

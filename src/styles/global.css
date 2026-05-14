@@ -38,12 +38,19 @@ body {
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	color: rgb(var(--gray-dark));
-	font-size: 20px;
+	/* 流式字号：≤640px 起步 16px，1280px+ 封顶 20px */
+	font-size: clamp(16px, 0.6vw + 14px, 20px);
 	line-height: 1.7;
 }
+/*
+  ━━━━━━━━━━ 响应式断点（参考） ━━━━━━━━━━
+  ≤ 640px   手机
+  641–960   平板
+  961–1280  桌面（默认设计宽度）
+  > 1280    大屏（部分页面解锁更宽布局）
+*/
 main {
-	width: 720px;
-	max-width: calc(100% - 2em);
+	width: min(720px, 100% - 2em);
 	margin: 2em auto;
 	padding: 2.5em 2em;
 	background: var(--glass-bg);
@@ -131,12 +138,14 @@ hr {
 	border: none;
 	border-top: 1px solid rgb(var(--gray-light));
 }
-@media (max-width: 720px) {
-	body {
-		font-size: 18px;
-	}
+@media (max-width: 960px) {
 	main {
-		padding: 1em;
+		padding: 1.8em 1.4em;
+	}
+}
+@media (max-width: 640px) {
+	main {
+		padding: 1.2em 1em;
 	}
 }
 

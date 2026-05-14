@@ -170,7 +170,7 @@ const stack = [
 
 		<style>
 			main {
-				width: 800px;
+				width: min(800px, 100% - 2em);
 				background: transparent;
 				backdrop-filter: none;
 				-webkit-backdrop-filter: none;
@@ -207,7 +207,7 @@ const stack = [
 					0 8px 24px rgba(31, 38, 135, 0.18);
 			}
 			.name {
-				font-size: 2.4em;
+				font-size: clamp(1.6em, 3vw + 1em, 2.4em);
 				margin: 0.2em 0 0;
 				font-weight: 800;
 				color: rgb(var(--gray-dark));
@@ -416,13 +416,12 @@ const stack = [
 				color: var(--accent);
 			}
 
-			@media (max-width: 720px) {
-				main {
-					width: 100%;
+			@media (max-width: 960px) {
+				.stack-label {
+					min-width: 5em;
 				}
-				.name {
-					font-size: 1.8em;
-				}
+			}
+			@media (max-width: 640px) {
 				.stats {
 					gap: 1.2em;
 				}

@@ -159,7 +159,7 @@ const typeLines = [
 
 		<style>
 			main {
-				width: 920px;
+				width: min(920px, 100% - 2em);
 				background: transparent;
 				backdrop-filter: none;
 				-webkit-backdrop-filter: none;
@@ -184,7 +184,7 @@ const typeLines = [
 				box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
 			}
 			.typewriter {
-				font-size: 1.25em;
+				font-size: clamp(1em, 1.5vw + 0.7em, 1.25em);
 				color: #ff7a45;
 				margin: 0 0 1em;
 				min-height: 1.5em;
@@ -211,7 +211,7 @@ const typeLines = [
 					0 8px 24px rgba(31, 38, 135, 0.18);
 			}
 			.name {
-				font-size: 2.8em;
+				font-size: clamp(1.8em, 4vw + 1em, 2.8em);
 				margin: 0.2em 0 0;
 				font-weight: 800;
 				letter-spacing: 0.02em;
@@ -336,8 +336,8 @@ const typeLines = [
 				list-style: none;
 				margin: 0;
 				padding: 0;
-				display: flex;
-				flex-direction: column;
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 				gap: 0.8em;
 			}
 			.post-cards a {
@@ -441,13 +441,7 @@ const typeLines = [
 				color: rgb(var(--gray));
 			}
 
-			@media (max-width: 720px) {
-				main {
-					width: 100%;
-				}
-				.name {
-					font-size: 2em;
-				}
+			@media (max-width: 640px) {
 				.cta {
 					flex-direction: column;
 				}

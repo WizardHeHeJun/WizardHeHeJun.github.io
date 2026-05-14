@@ -38,8 +38,7 @@ const {
 				box-shadow: none;
 			}
 			.hero-image {
-				width: 100%;
-				max-width: 1020px;
+				width: min(1020px, 100% - 2em);
 				margin: 0 auto 1em;
 			}
 			.hero-image img {
@@ -49,8 +48,7 @@ const {
 				box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
 			}
 			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
+				width: min(760px, 100% - 2em);
 				margin: auto;
 				padding: 2.5em 2em;
 				color: rgb(var(--gray-dark));
@@ -60,6 +58,11 @@ const {
 				border: 1px solid rgba(255, 255, 255, 0.45);
 				border-radius: 18px;
 				box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+			}
+			@media (max-width: 640px) {
+				.prose {
+					padding: 1.6em 1.2em;
+				}
 			}
 			.title {
 				margin-bottom: 1em;
