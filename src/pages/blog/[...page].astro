@@ -51,8 +51,13 @@ const postsWithStats = page.data.map((p) => ({
 			}
 			@media (min-width: 1400px) {
 				main {
-					width: min(1280px, 100% - 4em);
-					grid-template-columns: 300px minmax(0, 1fr);
+					width: min(1500px, 100% - 4em);
+					grid-template-columns: 320px minmax(0, 1fr);
+				}
+			}
+			@media (min-width: 1800px) {
+				main {
+					width: min(1680px, 100% - 4em);
 				}
 			}
 			.posts-card {
