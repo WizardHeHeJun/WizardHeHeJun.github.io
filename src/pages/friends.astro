@@ -1,0 +1,125 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+import friends from '../data/friends.json';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`友链 · ${SITE_TITLE}`} description="一些值得关注的博客和小宇宙" />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>友链</h1>
+			<p class="hint">一些值得关注的博客和小宇宙。想换链请到任意一篇博客评论留言～</p>
+
+			{
+				friends.length === 0 ? (
+					<p class="empty">还没有友链。等你把第一个朋友加进来 ✨</p>
+				) : (
+					<ul class="friends-grid">
+						{friends.map((f) => (
+							<li>
+								<a href={f.url} target="_blank" rel="noopener">
+									<img src={f.avatar} alt={f.name} loading="lazy" />
+									<div class="info">
+										<h3>{f.name}</h3>
+										<p>{f.description}</p>
+									</div>
+								</a>
+							</li>
+						))}
+					</ul>
+				)
+			}
+
+			<section class="apply">
+				<h2>申请友链</h2>
+				<p>欢迎志同道合的朋友交换链接。本站信息：</p>
+				<pre><code>{`名称：WizardHeHeJun's Notes
+地址：https://wizardhehejun.github.io
+头像：https://wizardhehejun.github.io/favicon-192.png
+描述：项目分享、技术笔记，和一些不想被时间冲走的碎碎念。`}</code></pre>
+				<p>把以上信息和你的博客信息发给我（GitHub Issue 或 X 私信都行）。</p>
+			</section>
+		</main>
+		<Footer />
+		<style>
+			h1 {
+				margin-bottom: 0.2em;
+			}
+			.hint {
+				color: rgb(var(--gray));
+				margin-bottom: 1.5em;
+			}
+			.empty {
+				text-align: center;
+				color: rgb(var(--gray));
+				padding: 2em;
+				background: rgba(255, 255, 255, 0.4);
+				border-radius: 12px;
+			}
+			.friends-grid {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+				gap: 1em;
+			}
+			.friends-grid a {
+				display: flex;
+				gap: 0.8em;
+				align-items: center;
+				padding: 1em;
+				background: rgba(255, 255, 255, 0.5);
+				border: 1px solid rgba(255, 255, 255, 0.45);
+				border-radius: 12px;
+				text-decoration: none;
+				color: rgb(var(--gray-dark));
+				transition: transform 0.15s ease, background 0.15s ease;
+			}
+			.friends-grid a:hover {
+				background: rgba(255, 255, 255, 0.75);
+				transform: translateY(-3px);
+			}
+			.friends-grid img {
+				width: 56px;
+				height: 56px;
+				border-radius: 50%;
+				flex-shrink: 0;
+				object-fit: cover;
+				background: rgba(0, 0, 0, 0.05);
+			}
+			.info h3 {
+				margin: 0 0 0.2em;
+				font-size: 1em;
+			}
+			.info p {
+				margin: 0;
+				font-size: 0.85em;
+				color: rgb(var(--gray));
+				line-height: 1.4;
+			}
+			.apply {
+				margin-top: 3em;
+				padding-top: 1.5em;
+				border-top: 1px dashed rgba(0, 0, 0, 0.1);
+			}
+			.apply h2 {
+				font-size: 1.3em;
+			}
+			.apply pre {
+				padding: 1em;
+				background: rgba(255, 255, 255, 0.4);
+				border-radius: 8px;
+				font-size: 0.85em;
+				overflow-x: auto;
+			}
+		</style>
+	</body>
+</html>
