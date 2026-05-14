@@ -1,5 +1,5 @@
 ---
-// 鼠标轨迹：节流的 mousemove → 在指针位置生成一个旋转的彩色小方块（短拖尾）
+// 鼠标轨迹：节流的 mousemove → 在指针位置生成一个空心几何菱形（描边、旋转、淡出）
 // 触屏设备自动跳过；prefers-reduced-motion 时也不创建
 ---
 
@@ -13,24 +13,25 @@
 			return;
 		}
 
-		const colors = ['#ff90c0', '#c280ff', '#7ab5ff'];
+		const colors = ['#ff90c0', '#7ab5ff'];
 		let lastT = 0;
 		let colorIdx = 0;
-		const MAX = 12; // 最大同时存在数量
+		const MAX = 22; // 最大同时存在数量（更长的拖尾）
+		const LIFE = 900; // 单点生命周期（ms）
 		const queue = [];
 
 		document.addEventListener(
 			'mousemove',
 			(e) => {
 				const now = performance.now();
-				if (now - lastT < 35) return; // 节流 ~28fps
+				if (now - lastT < 28) return; // 节流 ~36fps
 				lastT = now;
 
 				const dot = document.createElement('span');
 				dot.className = 'cursor-trail-dot';
 				dot.style.left = e.clientX + 'px';
 				dot.style.top = e.clientY + 'px';
-				dot.style.background = colors[colorIdx];
+				dot.style.color = colors[colorIdx];
 				colorIdx = (colorIdx + 1) % colors.length;
 
 				document.body.appendChild(dot);
@@ -43,7 +44,7 @@
 					dot.remove();
 					const i = queue.indexOf(dot);
 					if (i >= 0) queue.splice(i, 1);
-				}, 500);
+				}, LIFE);
 			},
 			{ passive: true },
 		);
@@ -54,23 +55,27 @@
 	.cursor-trail-dot {
 		position: fixed;
 		pointer-events: none;
-		width: 8px;
-		height: 8px;
-		border-radius: 2px;
+		width: 16px;
+		height: 16px;
+		border: 1.5px solid currentColor;
+		background: transparent;
 		transform: translate(-50%, -50%) rotate(45deg);
-		opacity: 0.7;
+		opacity: 0.85;
 		z-index: 9999;
-		animation: cursor-trail-fade 500ms ease-out forwards;
-		box-shadow: 0 0 6px currentColor;
+		animation: cursor-trail-fade 900ms cubic-bezier(0.4, 0, 0.6, 1) forwards;
 	}
 	@keyframes cursor-trail-fade {
 		0% {
-			opacity: 0.7;
-			transform: translate(-50%, -50%) rotate(45deg) scale(1);
+			opacity: 0.9;
+			transform: translate(-50%, -50%) rotate(45deg) scale(0.6);
+		}
+		25% {
+			opacity: 0.85;
+			transform: translate(-50%, -50%) rotate(75deg) scale(1.1);
 		}
 		100% {
 			opacity: 0;
-			transform: translate(-50%, -50%) rotate(180deg) scale(0.2);
+			transform: translate(-50%, -50%) rotate(225deg) scale(0.2);
 		}
 	}
 </style>
