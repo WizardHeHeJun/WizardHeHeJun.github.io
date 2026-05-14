@@ -5,6 +5,19 @@ import HeaderLink from './HeaderLink.astro';
 
 <header>
 	<nav>
+		<button
+			type="button"
+			class="hamburger"
+			data-drawer-toggle
+			aria-label="打开菜单"
+			aria-expanded="false"
+			aria-controls="mobile-drawer"
+		>
+			<span class="hb-bar"></span>
+			<span class="hb-bar"></span>
+			<span class="hb-bar"></span>
+		</button>
+
 		<h2><a href="/">{SITE_TITLE}</a></h2>
 		<div class="internal-links">
 			<HeaderLink href="/">首页</HeaderLink>
@@ -50,6 +63,64 @@ import HeaderLink from './HeaderLink.astro';
 		</div>
 	</nav>
 </header>
+
+<!-- ━━━━━━━━━━ 移动端侧边抽屉 ━━━━━━━━━━ -->
+<div class="drawer-backdrop" data-drawer-backdrop aria-hidden="true"></div>
+<aside id="mobile-drawer" class="drawer" data-drawer aria-label="移动端导航" aria-hidden="true">
+	<div class="drawer-head">
+		<span class="drawer-title">{SITE_TITLE}</span>
+		<button type="button" class="drawer-close" data-drawer-toggle aria-label="关闭菜单">×</button>
+	</div>
+	<nav class="drawer-nav">
+		<a href="/">首页</a>
+		<a href="/blog/">博客</a>
+		<a href="/categories/">分类</a>
+		<a href="/tags/">标签</a>
+		<a href="/friends/">友链</a>
+		<a href="/about/">关于</a>
+	</nav>
+	<div class="drawer-divider"></div>
+	<div class="drawer-socials">
+		<a href="https://github.com/WizardHeHeJun" target="_blank" rel="noopener">GitHub</a>
+		<a href="https://space.bilibili.com/40752109" target="_blank" rel="noopener">哔哩哔哩</a>
+		<a href="https://x.com/wizardhehejun" target="_blank" rel="noopener">X</a>
+	</div>
+</aside>
+
+<script is:inline>
+	(() => {
+		const drawer = document.querySelector('[data-drawer]');
+		const backdrop = document.querySelector('[data-drawer-backdrop]');
+		if (!drawer || !backdrop) return;
+		const toggles = document.querySelectorAll('[data-drawer-toggle]');
+		const hamburger = document.querySelector('.hamburger');
+		const open = () => {
+			drawer.classList.add('is-open');
+			backdrop.classList.add('is-open');
+			document.body.classList.add('drawer-open');
+			drawer.setAttribute('aria-hidden', 'false');
+			backdrop.setAttribute('aria-hidden', 'false');
+			if (hamburger) hamburger.setAttribute('aria-expanded', 'true');
+		};
+		const close = () => {
+			drawer.classList.remove('is-open');
+			backdrop.classList.remove('is-open');
+			document.body.classList.remove('drawer-open');
+			drawer.setAttribute('aria-hidden', 'true');
+			backdrop.setAttribute('aria-hidden', 'true');
+			if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
+		};
+		toggles.forEach((t) => t.addEventListener('click', () => {
+			drawer.classList.contains('is-open') ? close() : open();
+		}));
+		backdrop.addEventListener('click', close);
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape' && drawer.classList.contains('is-open')) close();
+		});
+		drawer.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
+	})();
+</script>
+
 <style>
 	header {
 		margin: 0;
@@ -91,6 +162,32 @@ import HeaderLink from './HeaderLink.astro';
 	.social-links a {
 		display: flex;
 	}
+
+	/* —— 汉堡按钮：默认隐藏，≤720 才出现 —— */
+	.hamburger {
+		display: none;
+		flex-direction: column;
+		justify-content: center;
+		gap: 4px;
+		padding: 0.6em;
+		margin-right: 0.4em;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		border-radius: 8px;
+		transition: background 0.15s ease;
+	}
+	.hamburger:hover {
+		background: rgba(35, 55, 255, 0.06);
+	}
+	.hb-bar {
+		display: block;
+		width: 22px;
+		height: 2px;
+		background: rgb(var(--gray-dark));
+		border-radius: 2px;
+	}
+
 	/* —— 平板：压缩 nav 间距 —— */
 	@media (max-width: 960px) {
 		header {
@@ -108,22 +205,36 @@ import HeaderLink from './HeaderLink.astro';
 		.social-links {
 			display: none;
 		}
+		/* nav 内的链接折到抽屉，搜索按钮独立显示在右侧 */
+		.internal-links > a,
+		.internal-links .dropdown {
+			display: none;
+		}
+		.hamburger {
+			display: inline-flex;
+		}
+		nav {
+			justify-content: space-between;
+		}
+		h2 {
+			text-align: center;
+			flex: 1;
+		}
+		.internal-links {
+			display: flex;
+		}
 	}
-	/* —— 超窄屏：藏站名，nav 居中铺满 —— */
+	/* —— 超窄屏：藏站名 —— */
 	@media (max-width: 480px) {
 		header {
 			padding: 0 0.4em;
 		}
-		nav {
-			justify-content: center;
-		}
 		h2 {
 			display: none;
 		}
-		nav a,
 		.search-trigger {
-			padding: 0.9em 0.3em;
-			font-size: 0.95em;
+			padding: 0.9em 0.6em;
+			font-size: 1em;
 		}
 	}
 	/* —— 二级 dropdown —— */
@@ -185,5 +296,115 @@ import HeaderLink from './HeaderLink.astro';
 	}
 	.search-trigger:hover {
 		background: rgba(35, 55, 255, 0.06);
+	}
+
+	/* ━━━━━━━━━━ 抽屉 + backdrop ━━━━━━━━━━ */
+	.drawer-backdrop {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.4);
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.25s ease;
+		z-index: 90;
+	}
+	.drawer-backdrop.is-open {
+		opacity: 1;
+		pointer-events: auto;
+	}
+	.drawer {
+		position: fixed;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		width: min(280px, 80vw);
+		background: rgba(255, 255, 255, 0.92);
+		backdrop-filter: blur(20px) saturate(180%);
+		-webkit-backdrop-filter: blur(20px) saturate(180%);
+		border-right: 1px solid rgba(255, 255, 255, 0.5);
+		box-shadow: 8px 0 32px rgba(31, 38, 135, 0.18);
+		transform: translateX(-100%);
+		transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		z-index: 91;
+		display: flex;
+		flex-direction: column;
+		padding: 1em 1.2em 1.5em;
+	}
+	.drawer.is-open {
+		transform: translateX(0);
+	}
+	.drawer-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding-bottom: 0.6em;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+	}
+	.drawer-title {
+		font-size: 0.95em;
+		font-weight: 600;
+		color: rgb(var(--gray-dark));
+	}
+	.drawer-close {
+		background: transparent;
+		border: none;
+		font-size: 1.6em;
+		line-height: 1;
+		cursor: pointer;
+		padding: 0.2em 0.5em;
+		color: rgb(var(--gray-dark));
+		border-radius: 8px;
+		transition: background 0.15s ease;
+	}
+	.drawer-close:hover {
+		background: rgba(0, 0, 0, 0.06);
+	}
+	.drawer-nav {
+		display: flex;
+		flex-direction: column;
+		margin-top: 0.6em;
+	}
+	.drawer-nav a {
+		padding: 0.8em 0.6em;
+		color: rgb(var(--gray-dark));
+		text-decoration: none;
+		border-radius: 10px;
+		font-size: 1em;
+		transition: background 0.15s ease, color 0.15s ease;
+	}
+	.drawer-nav a:hover {
+		background: rgba(35, 55, 255, 0.08);
+		color: var(--accent);
+	}
+	.drawer-divider {
+		margin: 0.8em 0 0.6em;
+		border-top: 1px dashed rgba(0, 0, 0, 0.1);
+	}
+	.drawer-socials {
+		display: flex;
+		gap: 0.5em;
+		flex-wrap: wrap;
+		padding: 0 0.4em;
+	}
+	.drawer-socials a {
+		flex: 1;
+		text-align: center;
+		padding: 0.5em 0.6em;
+		font-size: 0.85em;
+		background: rgba(35, 55, 255, 0.06);
+		color: var(--accent);
+		text-decoration: none;
+		border-radius: 999px;
+		transition: background 0.15s ease;
+	}
+	.drawer-socials a:hover {
+		background: rgba(35, 55, 255, 0.16);
+	}
+
+	/* —— 抽屉打开时禁止 body 滚动 —— */
+	:global(body.drawer-open) {
+		overflow: hidden;
 	}
 </style>
