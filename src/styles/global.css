@@ -34,10 +34,10 @@ body {
 	min-height: 100vh;
 	background-image: url('../assets/bg.jpg'),
 		linear-gradient(135deg, #cfe9ff 0%, #e6f4ff 100%);
-	background-position: center top;
+	background-position: center var(--bg-y, 0%), center;
 	background-repeat: no-repeat;
-	background-size: 100vw auto, 100% 100%;
-	background-attachment: scroll;
+	background-size: cover, 100% 100%;
+	background-attachment: fixed, fixed;
 	background-color: #e6f4ff;
 	word-wrap: break-word;
 	overflow-wrap: break-word;

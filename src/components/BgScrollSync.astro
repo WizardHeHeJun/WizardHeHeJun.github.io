@@ -1,0 +1,29 @@
+---
+// 把页面 scroll 进度（0-100%）映射到 body 的 --bg-y CSS 变量
+// 配合 global.css 里 `background-position: center var(--bg-y)` + `attachment: fixed` 实现「滑块式背景」
+// - 页头：bg-y = 0%（看图顶）
+// - 页尾：bg-y = 100%（看图底）
+// - 不会被拉伸、不会有空白、跨页一致
+---
+
+<script is:inline>
+	(function () {
+		const root = document.body;
+		let raf = 0;
+		const update = () => {
+			raf = 0;
+			const sy = window.scrollY;
+			const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+			const pct = Math.min(1, Math.max(0, sy / max));
+			root.style.setProperty('--bg-y', (pct * 100).toFixed(2) + '%');
+		};
+		const schedule = () => {
+			if (!raf) raf = requestAnimationFrame(update);
+		};
+		window.addEventListener('scroll', schedule, { passive: true });
+		window.addEventListener('resize', schedule, { passive: true });
+		// 初始化 + DOM 完成后再算一次（图片加载完高度可能变）
+		update();
+		window.addEventListener('load', update);
+	})();
+</script>
