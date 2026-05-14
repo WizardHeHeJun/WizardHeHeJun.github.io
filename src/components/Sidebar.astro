@@ -155,10 +155,19 @@ const tagCount = new Set(posts.flatMap((p) => p.data.tags)).size;
 	.recent-list a:hover {
 		color: var(--accent);
 	}
-	/* —— 平板及以下：博客列表已改成单列横向卡片，sidebar 信息冗余，隐藏让内容铺满 —— */
+	/* —— 中等分辨率（641-960，平板/竖屏）：sidebar 折到顶部，3 卡横向铺开 —— */
 	@media (max-width: 960px) {
 		.sidebar {
-			display: none;
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			gap: 0.8em;
+		}
+	}
+	/* —— 移动 (≤640)：恢复单列垂直堆叠 —— */
+	@media (max-width: 640px) {
+		.sidebar {
+			display: flex;
+			flex-direction: column;
 		}
 	}
 </style>
