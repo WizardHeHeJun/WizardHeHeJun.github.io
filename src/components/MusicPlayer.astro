@@ -1,0 +1,45 @@
+---
+// APlayer + MetingJS via CDN — 网易云歌单 ID 随时可改（默认是一个 ACG 公共歌单）
+const playlistServer = 'netease';
+const playlistType = 'playlist';
+const playlistId = '2619366951';
+---
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css" />
+<script is:inline src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>
+
+<meting-js
+	server={playlistServer}
+	type={playlistType}
+	id={playlistId}
+	fixed="true"
+	mini="true"
+	autoplay="false"
+	preload="none"
+	theme="#2337ff"
+	loop="all"
+	order="random"
+	volume="0.5"
+	list-folded="true"
+></meting-js>
+
+<style is:global>
+	/* APlayer mini fixed 模式样式调整 */
+	.aplayer.aplayer-fixed {
+		z-index: 99 !important;
+		left: auto !important;
+		right: 20px !important;
+		bottom: 20px !important;
+	}
+	.aplayer.aplayer-fixed .aplayer-body {
+		left: -66px !important;
+	}
+	/* 在小屏幕上让播放器更小一点 */
+	@media (max-width: 600px) {
+		.aplayer.aplayer-fixed {
+			right: 10px !important;
+			bottom: 10px !important;
+		}
+	}
+</style>
