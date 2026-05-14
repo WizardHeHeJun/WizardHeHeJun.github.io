@@ -1,6 +1,15 @@
 ---
+import { getCollection } from 'astro:content';
 import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+
+// 最近文章 ticker（仅 ≤640 显示，自动滚动）
+const allPosts = await getCollection('blog');
+const recent = allPosts
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 5);
+// 末尾补一份首项实现无缝循环
+const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 ---
 
 <header>
@@ -63,6 +72,22 @@ import HeaderLink from './HeaderLink.astro';
 		</div>
 	</nav>
 </header>
+
+<!-- ━━━━━━━━━━ 最近文章 ticker（仅 ≤640） ━━━━━━━━━━ -->
+{
+	tickerItems.length > 1 && (
+		<div class="ticker" aria-label="最近文章">
+			<span class="ticker-label">📰 最近</span>
+			<ul class="ticker-list" style={`--ticker-count: ${recent.length}`}>
+				{tickerItems.map((p) => (
+					<li>
+						<a href={`/blog/${p.id}/`}>{p.data.title}</a>
+					</li>
+				))}
+			</ul>
+		</div>
+	)
+}
 
 <!-- ━━━━━━━━━━ 移动端侧边抽屉 ━━━━━━━━━━ -->
 <div class="drawer-backdrop" data-drawer-backdrop aria-hidden="true"></div>
@@ -418,5 +443,78 @@ import HeaderLink from './HeaderLink.astro';
 	/* —— 抽屉打开时禁止 body 滚动 —— */
 	:global(body.drawer-open) {
 		overflow: hidden;
+	}
+
+	/* ━━━━━━━━━━ 最近文章 ticker ━━━━━━━━━━ */
+	.ticker {
+		display: none;
+		position: relative;
+		height: 2.4em;
+		overflow: hidden;
+		background: rgba(255, 255, 255, 0.45);
+		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+		font-size: 0.85em;
+	}
+	.ticker-label {
+		position: absolute;
+		left: 0.8em;
+		top: 50%;
+		transform: translateY(-50%);
+		z-index: 2;
+		padding-right: 0.7em;
+		color: var(--accent);
+		font-weight: 600;
+		font-size: 0.85em;
+		background: linear-gradient(
+			90deg,
+			rgba(255, 255, 255, 0.85) 60%,
+			rgba(255, 255, 255, 0)
+		);
+		pointer-events: none;
+	}
+	.ticker-list {
+		list-style: none;
+		margin: 0;
+		padding: 0 1em 0 5.2em;
+		display: flex;
+		flex-direction: column;
+		animation: ticker-roll calc(var(--ticker-count, 5) * 3s) cubic-bezier(0.7, 0, 0.3, 1) infinite;
+	}
+	.ticker-list li {
+		height: 2.4em;
+		display: flex;
+		align-items: center;
+	}
+	.ticker-list a {
+		display: block;
+		max-width: 100%;
+		color: rgb(var(--gray-dark));
+		text-decoration: none;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.ticker-list a:hover {
+		color: var(--accent);
+	}
+	@keyframes ticker-roll {
+		0%, 16% { transform: translateY(0); }
+		20%, 36% { transform: translateY(-100%); }
+		40%, 56% { transform: translateY(-200%); }
+		60%, 76% { transform: translateY(-300%); }
+		80%, 96% { transform: translateY(-400%); }
+		100% { transform: translateY(-500%); }
+	}
+	@media (max-width: 640px) {
+		.ticker {
+			display: block;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.ticker-list {
+			animation: none;
+		}
 	}
 </style>
