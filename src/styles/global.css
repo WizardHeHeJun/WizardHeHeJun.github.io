@@ -29,8 +29,13 @@ body {
 	margin: 0;
 	padding: 0;
 	text-align: left;
-	background: url('/bg.jpg') center center / cover no-repeat fixed,
+	background-image: url('../assets/bg.jpg'),
 		linear-gradient(135deg, #cfe9ff 0%, #e6f4ff 100%);
+	background-position: center top;
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-attachment: scroll;
+	background-color: #e6f4ff;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	color: rgb(var(--gray-dark));
