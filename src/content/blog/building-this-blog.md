@@ -3,7 +3,7 @@ title: '我用 Astro + GitHub Pages 搭了这个博客'
 description: '记录这个博客是怎么从零搭起来的——技术选型、踩过的坑、毛玻璃主题的实现。'
 pubDate: 'May 14 2026'
 featured: true
-heroImage: '../../assets/blog/building-this-blog.jpg'
+heroImage: '../../assets/blog/building-this-blog.png'
 ---
 
 ## 为什么要搭博客

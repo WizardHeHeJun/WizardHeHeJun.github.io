@@ -2,7 +2,7 @@
 title: 'Lacuna：半生成式叙事引擎'
 description: '作者写骨架，LLM 在边界内填补留白，玩家选择决定填法——一个面向视觉小说的叙事引擎实验。'
 pubDate: 'May 09 2026'
-heroImage: '../../assets/blog/lacuna.jpg'
+heroImage: '../../assets/blog/lacuna.png'
 ---
 
 ## 名字与初衷

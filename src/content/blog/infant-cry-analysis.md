@@ -2,7 +2,7 @@
 title: '婴儿哭声多模态分析：双通道 CNN + DNN 实验'
 description: '一个用 STFT 频谱图 + CNN 提特征 + DNN 分类的婴儿哭声原因识别项目，PyTorch 实现。'
 pubDate: 'Apr 14 2026'
-heroImage: '../../assets/blog/infant-cry-analysis.jpg'
+heroImage: '../../assets/blog/infant-cry-analysis.png'
 ---
 
 ## 项目背景

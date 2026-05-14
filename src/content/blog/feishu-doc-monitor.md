@@ -2,7 +2,7 @@
 title: '飞书 Wiki 子树文档变更监控器'
 description: '一个轻量 Python 脚本，递归扫描飞书 Wiki 子树、对比 SQLite 基线、有变更就推飞书通知。无后端、无常驻进程、无付费 SaaS。'
 pubDate: 'May 12 2026'
-heroImage: '../../assets/blog/feishu-doc-monitor.jpg'
+heroImage: '../../assets/blog/feishu-doc-monitor.png'
 ---
 
 ## 一句话
