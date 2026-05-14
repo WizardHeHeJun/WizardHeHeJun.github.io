@@ -10,78 +10,214 @@ import { SITE_TITLE } from '../consts';
 <!doctype html>
 <html lang="zh-CN">
 	<head>
-		<BaseHead title={`404 · ${SITE_TITLE}`} description="迷路了？这里没有这一页呢～♪" />
+		<BaseHead title={`404 · ${SITE_TITLE}`} description="这一页好像跑去别的时空了" />
 	</head>
 	<body>
 		<Header />
 		<main class="not-found">
-			<Image src={elysia} width={180} height={180} alt="迷路了" class="elysia" />
-			<h1>404</h1>
-			<p class="big">迷路了？这里没有这一页呢～♪</p>
-			<p class="small">可能是链接拼错了，或者它已经搬家去别处啦。</p>
-			<div class="actions">
-				<a href="/" class="btn primary">回首页</a>
-				<a href="/blog/" class="btn">去博客逛逛</a>
+			<!-- 飘动的小装饰 -->
+			<div class="sparkles" aria-hidden="true">
+				<span class="s s1">✦</span>
+				<span class="s s2">✧</span>
+				<span class="s s3">✦</span>
+				<span class="s s4">✧</span>
+				<span class="s s5">✦</span>
+				<span class="s s6">✧</span>
 			</div>
+
+			<!-- 主体：4 [头像] 4 -->
+			<div class="big-404">
+				<span class="digit d-left">4</span>
+				<div class="avatar-zero">
+					<Image src={elysia} width={200} height={200} alt="0" />
+				</div>
+				<span class="digit d-right">4</span>
+			</div>
+
+			<h1 class="line1">这一页可能在另一个时空里</h1>
+			<p class="line2">
+				我顺着链接找了一圈，没找到呢——<br />
+				或许是地址打错了，或许它本来就不存在。
+			</p>
+
+			<div class="actions">
+				<a href="/" class="btn primary">🏠 回首页</a>
+				<a href="/blog/" class="btn">📚 去博客</a>
+				<button class="btn ghost" id="back-btn" type="button">↩ 返回上一页</button>
+			</div>
+
+			<p class="footer-tip">如果你确定这个链接应该有内容，告诉我（X 私信 / GitHub Issue 都行）</p>
 		</main>
 		<Footer />
+
+		<script is:inline>
+			const back = document.getElementById('back-btn');
+			back?.addEventListener('click', () => history.back());
+		</script>
+
 		<style>
-			.not-found {
+			main.not-found {
 				text-align: center;
+				position: relative;
+				overflow: hidden;
+				min-height: 60vh;
 			}
-			.elysia {
-				display: block;
-				margin: 0 auto 1em;
-				width: 140px;
-				height: 140px;
-				border-radius: 50%;
-				object-fit: cover;
-				box-shadow: 0 8px 24px rgba(31, 38, 135, 0.2);
+
+			/* —— 大数字 + 头像中间位 —— */
+			.big-404 {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				gap: 0.1em;
+				margin: 1em 0 0.5em;
+				line-height: 1;
+				user-select: none;
 			}
-			h1 {
-				font-size: 4em;
-				margin: 0 0 0.2em;
-				background: linear-gradient(135deg, #ff90c0, #7ab5ff);
+			.digit {
+				font-size: clamp(6em, 18vw, 12em);
+				font-weight: 800;
+				background: linear-gradient(135deg, #ff90c0 0%, #c280ff 50%, #7ab5ff 100%);
 				-webkit-background-clip: text;
 				background-clip: text;
 				color: transparent;
-				letter-spacing: 0.05em;
+				letter-spacing: -0.05em;
+				animation: float 3s ease-in-out infinite;
+				text-shadow: 0 4px 24px rgba(255, 144, 192, 0.3);
 			}
-			.big {
-				font-size: 1.3em;
-				margin: 0 0 0.5em;
+			.d-left {
+				animation-delay: 0s;
 			}
-			.small {
+			.d-right {
+				animation-delay: 1.5s;
+			}
+			.avatar-zero {
+				width: clamp(5em, 15vw, 10em);
+				height: clamp(5em, 15vw, 10em);
+				border-radius: 50%;
+				overflow: hidden;
+				margin: 0 -0.1em;
+				border: 4px solid rgba(255, 255, 255, 0.6);
+				box-shadow:
+					0 0 0 4px rgba(194, 128, 255, 0.3),
+					0 12px 32px rgba(31, 38, 135, 0.25);
+				animation: spin 8s linear infinite, float 3s ease-in-out infinite;
+				animation-delay: 0s, 0.75s;
+			}
+			.avatar-zero img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+			}
+
+			/* —— 文字 —— */
+			.line1 {
+				font-size: 1.6em;
+				margin: 0.5em 0 0.3em;
+				color: rgb(var(--gray-dark));
+				font-weight: 600;
+			}
+			.line2 {
+				font-size: 1em;
 				color: rgb(var(--gray));
 				margin: 0 0 1.5em;
+				line-height: 1.7;
 			}
+
+			/* —— 按钮 —— */
 			.actions {
 				display: flex;
 				justify-content: center;
-				gap: 0.8em;
+				gap: 0.6em;
 				flex-wrap: wrap;
+				margin-bottom: 2em;
 			}
 			.btn {
 				display: inline-block;
 				padding: 0.6em 1.4em;
-				background: rgba(255, 255, 255, 0.5);
+				background: rgba(255, 255, 255, 0.55);
 				border: 1px solid rgba(255, 255, 255, 0.45);
 				border-radius: 999px;
 				color: rgb(var(--gray-dark));
 				text-decoration: none;
-				transition: background 0.15s ease, transform 0.15s ease;
+				cursor: pointer;
+				font-family: inherit;
+				font-size: 1em;
+				transition:
+					background 0.18s ease,
+					transform 0.18s ease,
+					box-shadow 0.18s ease;
 			}
 			.btn:hover {
-				background: rgba(255, 255, 255, 0.8);
-				transform: translateY(-2px);
+				background: rgba(255, 255, 255, 0.85);
+				transform: translateY(-3px);
+				box-shadow: 0 6px 16px rgba(31, 38, 135, 0.15);
 			}
 			.btn.primary {
-				background: var(--accent);
+				background: linear-gradient(135deg, #ff90c0, #7ab5ff);
 				color: white;
-				border-color: var(--accent);
+				border-color: transparent;
 			}
 			.btn.primary:hover {
-				background: var(--accent-dark);
+				background: linear-gradient(135deg, #ff70a8, #5a98e8);
+			}
+			.btn.ghost {
+				background: transparent;
+				border-color: rgba(0, 0, 0, 0.1);
+			}
+			.footer-tip {
+				color: rgb(var(--gray));
+				font-size: 0.85em;
+				margin: 0;
+				opacity: 0.8;
+			}
+
+			/* —— 飘动的小装饰 —— */
+			.sparkles {
+				position: absolute;
+				inset: 0;
+				pointer-events: none;
+			}
+			.s {
+				position: absolute;
+				font-size: 1.5em;
+				color: #c280ff;
+				opacity: 0.5;
+				animation: drift 8s ease-in-out infinite;
+			}
+			.s1 { top: 10%; left: 15%; animation-delay: 0s; }
+			.s2 { top: 20%; right: 12%; animation-delay: 1s; color: #ff90c0; font-size: 1.2em; }
+			.s3 { bottom: 30%; left: 8%; animation-delay: 2s; color: #7ab5ff; font-size: 1.8em; }
+			.s4 { bottom: 15%; right: 18%; animation-delay: 3s; }
+			.s5 { top: 50%; left: 5%; animation-delay: 4s; font-size: 1em; color: #ff90c0; }
+			.s6 { top: 65%; right: 7%; animation-delay: 5s; color: #7ab5ff; }
+
+			/* —— 动画 —— */
+			@keyframes float {
+				0%, 100% { transform: translateY(0); }
+				50% { transform: translateY(-12px); }
+			}
+			@keyframes spin {
+				from { transform: rotate(0deg); }
+				to { transform: rotate(360deg); }
+			}
+			@keyframes drift {
+				0%, 100% {
+					transform: translate(0, 0) rotate(0deg);
+					opacity: 0.3;
+				}
+				50% {
+					transform: translate(20px, -30px) rotate(180deg);
+					opacity: 0.8;
+				}
+			}
+
+			/* 减少动画偏好 */
+			@media (prefers-reduced-motion: reduce) {
+				.digit,
+				.avatar-zero,
+				.s {
+					animation: none !important;
+				}
 			}
 		</style>
 	</body>
