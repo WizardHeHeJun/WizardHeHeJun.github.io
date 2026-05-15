@@ -241,6 +241,38 @@
 			const collapsed = fab?.classList.toggle('is-collapsed');
 			fabToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
 		});
+
+		/* —— 移动端 (≤640)：把 TOC mobile bar 搬进 header 占替代 ticker —— */
+		document.body.classList.add('has-toc');
+		const headerNav = document.querySelector('header > nav');
+		const tickerEl = headerNav?.querySelector('.ticker');
+		const originalParent = mobile.parentNode;
+		const originalNext = mobile.nextSibling;
+		const MOBILE_BP = 640;
+		let inHeader = false;
+		const placeInHeader = () => {
+			if (!headerNav || inHeader) return;
+			headerNav.insertBefore(mobile, tickerEl || null);
+			mobile.classList.add('toc-mobile--in-header');
+			if (tickerEl) tickerEl.style.display = 'none';
+			inHeader = true;
+		};
+		const placeInArticle = () => {
+			if (!inHeader) return;
+			if (originalParent) originalParent.insertBefore(mobile, originalNext);
+			mobile.classList.remove('toc-mobile--in-header');
+			if (tickerEl) tickerEl.style.display = '';
+			inHeader = false;
+		};
+		const updateMobilePlacement = () => {
+			if (window.innerWidth <= MOBILE_BP) placeInHeader();
+			else placeInArticle();
+		};
+		let rafResize = 0;
+		window.addEventListener('resize', () => {
+			if (!rafResize) rafResize = requestAnimationFrame(() => { updateMobilePlacement(); rafResize = 0; });
+		});
+		updateMobilePlacement();
 	};
 
 	if (document.readyState === 'loading') {
@@ -512,6 +544,37 @@
 		.toc-mobile-panel {
 			transition: none;
 		}
+	}
+
+	/* ━━━ 当 toc-mobile 被搬进 header（占替代 ticker 位置）的样式 ━━━ */
+	header > nav > .toc-mobile.toc-mobile--in-header {
+		position: relative;
+		flex: 1;
+		min-width: 0;
+		width: auto;
+		margin: 0 0.4em;
+		height: 2.4em;
+		display: block;
+	}
+	header > nav > .toc-mobile.toc-mobile--in-header .toc-mobile-trigger {
+		width: 100%;
+		height: 100%;
+		padding: 0 0.9em 0 0.7em;
+		font-size: 0.85em;
+		background: rgba(255, 255, 255, 0.5);
+		border: 1px solid rgba(255, 255, 255, 0.55);
+		border-radius: 999px;
+		box-shadow:
+			inset 0 1px 2px rgba(255, 255, 255, 0.4),
+			inset 0 -1px 2px rgba(31, 38, 135, 0.04),
+			0 1px 4px rgba(31, 38, 135, 0.08);
+		backdrop-filter: blur(12px) saturate(180%);
+		-webkit-backdrop-filter: blur(12px) saturate(180%);
+	}
+	header > nav > .toc-mobile.toc-mobile--in-header .toc-mobile-panel {
+		left: -0.2em;
+		right: -0.2em;
+		top: calc(100% + 6px);
 	}
 
 	/* 锚点滚动时给标题留出一点 padding（不被 header 盖住） */
