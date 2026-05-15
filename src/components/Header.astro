@@ -375,15 +375,17 @@ const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 		justify-content: center;
 		width: 48px;
 		height: 48px;
-		background: rgba(0, 0, 0, 0.04);
-		color: rgb(var(--gray));
+		background: rgba(255, 255, 255, 0.7);
+		border: 1px solid rgba(0, 0, 0, 0.08);
+		color: rgb(var(--gray-dark));
 		text-decoration: none;
 		border-radius: 50%;
-		transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+		transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
 	}
 	.social-links a:hover {
-		background: rgba(255, 93, 143, 0.1);
-		color: #ff5d8f;
+		background: linear-gradient(135deg, rgba(255, 209, 228, 0.95) 0%, rgba(255, 183, 197, 0.85) 100%);
+		border-color: rgba(255, 144, 192, 0.4);
+		color: #c2185b;
 		transform: translateY(-2px);
 	}
 	.social-links svg {
