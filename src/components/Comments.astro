@@ -57,12 +57,14 @@ const giscusTheme = import.meta.env.DEV
 	.comments-card {
 		width: 100%;
 		padding: 1.8em 2em;
-		background: rgba(255, 255, 255, 0.55);
-		backdrop-filter: blur(18px) saturate(180%);
-		-webkit-backdrop-filter: blur(18px) saturate(180%);
-		border: 1px solid rgba(255, 255, 255, 0.45);
+		/* 调低 alpha + 减弱 blur，让背景图的水色调子在所有滚动位置都能透出来，
+		   不会因为页面位置不同（about 动态背景 vs friends 偏白段）而显得轻重不一 */
+		background: rgba(255, 255, 255, 0.28);
+		backdrop-filter: blur(12px) saturate(160%);
+		-webkit-backdrop-filter: blur(12px) saturate(160%);
+		border: 1px solid rgba(255, 255, 255, 0.4);
 		border-radius: 18px;
-		box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+		box-shadow: 0 4px 18px rgba(31, 38, 135, 0.08);
 		box-sizing: border-box;
 	}
 	.comments-title {
