@@ -385,6 +385,21 @@ import { SITE_TITLE } from '../consts';
 				}
 			}
 
+			/* —— 大屏：画板放开手脚 —— */
+			@media (min-width: 1400px) {
+				main {
+					width: min(1400px, 100% - 4em);
+				}
+				.canvas-wrap {
+					aspect-ratio: 16 / 9;
+				}
+			}
+			@media (min-width: 1800px) {
+				main {
+					width: min(1680px, 100% - 6em);
+				}
+			}
+
 			/* ━━━━━━━━━━ 主题化确认 modal ━━━━━━━━━━ */
 			.modal-backdrop {
 				position: fixed;
