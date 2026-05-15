@@ -1,12 +1,12 @@
 ---
 title: '我用 Astro + GitHub Pages 搭了这个博客'
-description: '从零搭起来的全过程——技术选型、踩过的坑、玻璃风、Pagefind 搜索、音乐播放器、鼠标拖尾、parallax 背景、爱莉希雅口吻打字机、四档响应式 + 移动抽屉 + 嵌入式 ticker……一次 commit 半天的折腾日记。'
+description: '从零搭起来的全过程——技术选型、踩过的坑、玻璃风、Pagefind 搜索、音乐播放器、几何鼠标拖尾、parallax 背景、四档响应式 + 移动抽屉 + 嵌入式 ticker + 文章 TOC + Header 自动隐藏……一次 commit 半天的折腾日记。'
 pubDate: 'May 14 2026'
-updatedDate: 'May 14 2026'
+updatedDate: 'May 15 2026'
 featured: true
 heroImage: '../../assets/blog/building-this-blog.jpg'
 category: '项目分享'
-tags: ['Astro', 'GitHub Pages', '博客', '毛玻璃', 'Pagefind', '霞鹜文楷', '响应式', '移动端']
+tags: ['Astro', 'GitHub Pages', '博客', '毛玻璃', 'Pagefind', '霞鹜文楷', '响应式', '移动端', 'TOC']
 ---
 
 ## 为什么要搭博客
@@ -200,6 +200,157 @@ main { width: min(720px, 100% - 2em); }
 
 `.prose` 从 720px 加宽到 840px（≥1400 时 960px）。但**不超过 960px**——中文阅读舒适宽度上限，再宽眼睛跟不上行。需要充分利用大屏空间的话，做 TOC 侧栏而不是把正文撑宽。
 
+## 第五阶段：文章阅读体验
+
+桌面端文章打开后，光秃秃的正文加上 hero 图占满屏，**长文章用户没法跳读**。这一阶段补了 TOC + Header 自动隐藏 + 视觉一致性，专治阅读体验。
+
+### 1. 文章 TOC 目录（核心）
+
+参考 [xhblog.top](https://xhblog.top/blog/post/47/)。需求拆解：
+
+- 桌面 ≥1280：左侧贴边的固定栏，跟随 hero 释放到吸顶
+- 移动 ≤640：浮入 header 替代 ticker 位置（窄屏 ticker 没空间）
+- 全屏宽度上：scroll-spy 高亮当前节、点击平滑跳转
+- 右下角 FAB：「回到顶部 / 滚到底部 / × 折叠」
+
+**取标题的姿势**：不用 Astro 的 `headings` API（layout 拿不到），改成客户端 `document.querySelectorAll('.prose h2, .prose h3')`。中文 slugify 用 `replace(/[^\w一-龥\s-]/g, '')`。
+
+**编号**：h2 = `1.`、`2.`、… ，h3 = `1.1`、`1.2`、…
+
+**主动态高亮**：粉色渐变胶囊 + 右侧 5px 小圆点。`#c2185b` 配色。
+
+**桌面端跟随 hero 的动效**：未滚出 hero 时 TOC 贴在 hero 底部 + 20px；滚出后吸顶 80px。
+```js
+const top = Math.max(stickyTop, heroRect.bottom + 20);
+desktop.style.transform = `translateY(${top}px)`;
+```
+
+**为什么用 `transform` 不用 `top`**：每次 scroll 事件可能数十次回调，**改 `top` 触发 layout 重排**几 ms 一次，叠加 backdrop-filter 直接掉帧。`transform` 走 GPU 合成层 ~1ms。配 `will-change: transform`。
+
+**底部渐变遮罩**：列表滚到底不要硬切，最后 28px 渐变透明：
+```css
+mask-image: linear-gradient(180deg, black 0%, black calc(100% - 28px), transparent 100%);
+```
+
+### 2. TOC 致命陷阱：`<script is:inline>` 执行时机
+
+第一次写完，本地测试 TOC 死活不显示。**原因**：inline script 在 HTML 解析到该标签时**立即执行**——但 TOC 组件渲染在 `.prose` 之前，所以 `querySelector('.prose')` 返回 null，整个脚本 bail。
+
+修法是包 `DOMContentLoaded`：
+```js
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initTOC);
+} else {
+  initTOC();
+}
+```
+
+### 3. 移动 TOC 浮入 header：CSS 比 DOM teleport 靠谱
+
+最初想用 JS `insertBefore` 把 toc-mobile 搬进 `<header><nav>`。**结果跑不通**——Astro 渲染后 `document.querySelector('header > nav')` 在某些时序下返回 null，整个搬运失败但没报错。
+
+改用 CSS fixed 强制定位：
+```css
+@media (max-width: 640px) {
+  body.has-toc header .ticker { display: none !important; }
+  body.has-toc .toc-mobile {
+    position: fixed !important;
+    top: 7px; left: 50px; right: 48px;
+    z-index: 11;
+  }
+  /* 跟 header 一起隐藏 */
+  body.has-toc.header-hidden .toc-mobile {
+    transform: translateY(-160%);
+  }
+}
+```
+
+**body class 联动**：`has-toc` 标记当前页有 TOC（脚本初始化时加）、`header-hidden` 标记 header 被滚动隐藏。CSS 选择器一句 `body.has-toc.header-hidden .toc-mobile` 把三个组件状态串起来——避免 prop drilling。
+
+### 4. Header 自动隐藏
+
+下滑藏 / 上滑现 / 贴顶 80px 内永远显示 / 抽屉打开时强制可见 / 抖动 < 6px 忽略。`requestAnimationFrame` 节流。
+
+同时给 body 加 `header-hidden` 类——让 TOC 等组件能跟着联动（不止 transform 同步隐藏，TOC 桌面端在 header 隐藏时也会从 top:80 上移到 top:20，避免大块空白）。
+
+### 5. 右下角 FAB（floating action buttons）
+
+窄屏专用（桌面 TOC sidebar 内置同样按钮）。三个按钮：
+
+- ↑ 回到顶部
+- ↓ 滚到底部
+- × 折叠手柄（**不是删除**）
+
+点 × 让 scroll 按钮 `scale(0)` + `margin-top: -56px` 塌缩布局，× 缩成 40×40 粉色小手柄、图标换成 ☰。再点回弹。
+
+### 6. 统一图标按钮风格
+
+之前社交链接有的是文字（GitHub / 哔哩哔哩 / X）、有的是 SVG、搜索按钮还是 🔍 emoji。**emoji 在 Windows/Mac/Chrome 渲染都不同**，决定改全 SVG。
+
+最终四处（顶栏 / 抽屉 / sidebar / about）统一同一套规则：
+
+```css
+.social-links a {
+  width: 40px; height: 40px;
+  background: rgba(0, 0, 0, 0.04);   /* 默认中性灰 */
+  color: rgb(var(--gray));
+  border-radius: 50%;
+}
+.social-links a:hover {
+  background: rgba(35, 55, 255, 0.1);
+  color: var(--accent);              /* hover 染主题色 */
+  transform: translateY(-2px);
+}
+```
+
+加了**邮箱链接**（`mailto:`），信封图标占第四位。
+
+### 7. 鼠标拖尾从方块改成几何混搭
+
+从「彩色斜方块」改成空心几何：**菱形 + 三角形 3:1 混搭**（◇ ◇ △ ◇ ◇ △）。三角用 inline SVG（`<polygon stroke="currentColor" fill="none" />`），颜色随 dot 循环；菱形用 CSS border + rotate(45deg) + box-shadow 发光。
+
+为什么三角不能用 box-shadow？SVG 是个矩形 wrapper，box-shadow 会画出矩形 glow 出戏——改用 SVG 的 `filter: drop-shadow()`。
+
+### 8. CSS 特异性陷阱：站名 hover 取消
+
+`nav a:hover` 给所有顶栏链接加 hover 反馈（变色 + 下划线）。**问题**：网站标题 `<h2><a>` 也匹配，hover 也变色——但站名不应该像页签。
+
+直接写 `h2 a:hover` 不管用——和 `nav a:hover` 特异性都是 (0,1,1)，源序后写的赢。
+
+**解法**：用 `nav h2 a:hover`（0,1,2），显式提高一档：
+```css
+nav a:hover { color: var(--accent); /* ... */ }
+nav h2 a:hover {
+  color: var(--black);
+  border-bottom-color: transparent;
+  background: transparent;
+}
+```
+
+### 9. 首页最近文章用 6 篇（数学最优）
+
+旧实现 3 篇，3 列布局时整齐、2 列布局有 1 篇孤儿。改 4 篇，2 列整齐、3 列又有孤儿。
+
+**6 = LCM(2, 3)**——2 列铺 3 行，3 列铺 2 行，永远整齐填满。设计上"展示得多但又留点神秘"的微妙数字。
+
+### 10. 搜索浮窗居中
+
+旧实现钉在 right: 24px top: 64px，大屏视线要奔波到角落。
+
+改成 flex 居中：
+```css
+.search-overlay {
+  position: fixed; inset: 0;
+  display: flex;
+  align-items: flex-start;        /* 不竖直居中——结果列表向下展开，浮窗要靠上一点 */
+  justify-content: center;
+  padding: 12vh 16px 16px;
+}
+.search-popover { width: min(560px, 100%); }
+@media (min-width: 1280px) { .search-popover { width: 640px; } }
+@media (min-width: 1800px) { .search-popover { width: 740px; } }
+```
+
 ## 踩过最坑的 12 件事
 
 1. **PowerShell 不让跑 npm**：Windows 默认禁脚本，`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` 解决
@@ -214,14 +365,20 @@ main { width: min(720px, 100% - 2em); }
 10. **flex 父容器 `align-items: center` + 内部高列表 = translateY 数学失效**：列表会被垂直居中在父容器中点，可见窗口落在 list 中段而不是顶部，ticker 会显示「两条叠在一起」或「空白」。**必须用内层 `.window` 包裹列表 + 列表 `position: absolute`**——绝对定位元素不受父级 align-items 影响
 11. **CSS `translateY(-100%)` 是相对自身高度，不是相对父容器**：6 个 li × 2.4em 的 list 高 14.4em，`translateY(-100%)` = 移动 14.4em，整列直接出视野。N 个 item 的 ticker 每步应该 `-100/N %`（5+1 复制 → `-16.667%`）
 12. **置顶博文只靠徽章不够醒目**：用户一眼扫过会忽略 📌——必须有**布局层面的差异**：单列大图 + 21:9 横幅 + 暖色背景边框，让置顶卡看起来就是「不一样的卡」
+13. **`<script is:inline>` 在 HTML 解析到位置时立即执行**：组件渲染顺序决定脚本运行时机——TOC 组件在 `.prose` 之前，`querySelector('.prose')` 返回 null 默默 bail。**必须包 DOMContentLoaded**
+14. **scroll 监听改 `top` 触发 layout 重排**：每次 scroll 数十次回调，叠加 `backdrop-filter` 直接掉帧。**用 `transform: translateY()` 走 GPU 合成层** + `will-change: transform`
+15. **DOM teleport 不如 CSS fixed 可靠**：Astro 渲染时机 + querySelector 时序不稳，JS 搬运静默失败。能用 CSS `position: fixed + z-index` 解决就别动 DOM
+16. **emoji 图标在不同 OS 渲染不一致**：Windows / Mac / Chrome 各画一套——稳定的图标必须 SVG，邮箱链接信封 SVG / 搜索放大镜 SVG / 社交平台 SVG 全套
+17. **CSS 相同特异性按源序后写赢**：`h2 a:hover` 想覆盖 `nav a:hover` 不管用——必须显式 `nav h2 a:hover` 提高一档
+18. **6 = LCM(2, 3)**：首页最近文章用 6 篇而不是 3/4 篇，`auto-fit` 网格 2 列 / 3 列都能整齐填满
 
 ## 未来想加的
 
 - 暗色模式
 - Giscus 评论（基于 GitHub Issues，零维护）
-- 文章 TOC 目录
 - RSS 订阅按钮（feed 已经有了，缺入口）
 - 数学公式 / mermaid 图支持
+- 文章页阅读进度条（顶部一条 0-100%）
 
 代码全部开源：[github.com/WizardHeHeJun/WizardHeHeJun.github.io](https://github.com/WizardHeHeJun/WizardHeHeJun.github.io)
 
@@ -234,3 +391,4 @@ main { width: min(720px, 100% - 2em); }
 > - 2026-05-14 二版：补充 11 个功能升级、首页/关于页改造、5 个踩坑总结
 > - 2026-05-14 三版：第三阶段精修（首页 hero / 关于页重构 / 搜索 overlay / 背景独立层 + parallax）+ 踩坑扩到 8 条。**项目工作规范单独沉淀到了 [CLAUDE.md](https://github.com/WizardHeHeJun/WizardHeHeJun.github.io/blob/main/CLAUDE.md)**——未来 AI 协作直接读那个
 > - 2026-05-14 四版：**第四阶段「响应式 + 移动端 UX」**——统一四档断点 / `min()` 宽度策略 / `clamp()` 流式字号 / 博客列表横向交错卡片 / hover wiggle + active press 微动效 / ≤720 汉堡抽屉（可折叠二级 + 四种关闭路径）/ ≤640 nav 嵌入式胶囊 ticker（最近文章自动滚动）/ sidebar 三段行为。踩坑扩到 12 条（新增 4 条 CSS bug：box-sizing 溢出、flex align-items 居中破坏 ticker、translateY 百分比相对自身、置顶差异化）
+> - 2026-05-15 五版：**第五阶段「文章阅读体验」**——文章 TOC 目录（桌面左侧贴边 fixed 栏 + 移动浮入 header 替代 ticker + 右下角 FAB 折叠手柄）/ Header 自动隐藏（下滑藏/上滑现 + body class 联动）/ 鼠标拖尾换成菱形 + 三角几何混搭 / 统一图标按钮风格（4 处 40px 圆形玻璃按钮 + 邮箱链接）/ 搜索浮窗 flex 居中 + 大屏阶梯加宽 / 首页最近文章 3→6 篇（LCM(2,3) 整齐填充）/ 站名 hover 取消（特异性提升）。踩坑扩到 18 条（新增 6 条：inline script 时序、scroll 监听用 transform、DOM teleport 不如 CSS fixed、emoji 渲染分裂、CSS 特异性源序、6 篇数学最优）

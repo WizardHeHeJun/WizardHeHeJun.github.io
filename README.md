@@ -42,8 +42,9 @@ my-blog/
 │   │   ├── Pagination.astro         # 分页器（数字 + 上下页）
 │   │   ├── BgLayer.astro            # 独立背景层（绕开 backdrop-filter 冻结 bug）
 │   │   ├── BgScrollSync.astro       # JS 把 scroll 进度同步到 --bg-y CSS 变量
-│   │   ├── CursorTrail.astro        # 鼠标拖尾（节流 28fps，跳过触屏）
-│   │   ├── SearchOverlay.astro      # 搜索浮窗（Pagefind JS API + 自定义 UI）
+│   │   ├── CursorTrail.astro        # 鼠标拖尾（菱形 + 三角混搭，节流 45fps，跳过触屏）
+│   │   ├── SearchOverlay.astro      # 搜索浮窗（Pagefind JS API + 自定义 UI，flex 居中）
+│   │   ├── TableOfContents.astro    # 文章 TOC（DOM 扫描 h2/h3 + 桌面左侧栏 + 移动浮 header + FAB）
 │   │   └── MusicPlayer.astro        # APlayer + MetingJS 右下角音乐播放器
 │   ├── content/
 │   │   └── blog/                    # ⭐ 写新文章的地方（.md / .mdx）
@@ -87,18 +88,20 @@ my-blog/
 - 🌊 **毛玻璃风** —— 半透明白卡片 + `backdrop-filter: blur(18px) saturate(180%)`
 - 🖼️ **滑块式视差背景** —— 独立 `bg-layer` div + JS 同步 scroll 进度，页头看图顶 / 页尾看图底
 - 📐 **响应式四档断点** —— 移动 ≤640 / 平板 641-960 / 桌面 961-1280 / 大屏 >1400（再宽到 1800 解锁博文列表 1680px）
-- 🍔 **移动端 ☰ 抽屉** —— ≤720 折叠汉堡菜单，含可展开二级（博客 → 分类/标签）+ 社交快捷
+- 🍔 **移动端 ☰ 抽屉** —— ≤720 折叠汉堡菜单，含可展开二级（博客 → 分类/标签）+ 社交快捷（已删冗余 ×，留 4 种关闭路径）
 - 📰 **嵌入式 ticker** —— ≤640 nav 里挂胶囊状的最近文章自动滚动条（脉动小圆点 + 5s/项 + 无缝循环）
+- 📑 **文章 TOC 目录** —— 桌面 ≥1280 左侧贴边固定栏，含粉色「文章目录」胶囊 + 编号 + 主动态高亮 + 底部跳转按钮 + 渐变遮罩；移动端浮入 header 替代 ticker；窄屏右下角 FAB（回到顶部 / 滚到底部 / 折叠手柄）
+- 🎯 **Header 自动隐藏** —— 下滑藏 / 上滑现 / 贴顶 80px 内永远显示，body class 联动 TOC 等组件
 - 🃏 **横向交错卡片** —— 博文列表单列横向，奇偶图左/图右交错；置顶用 21:9 全宽大图差异化
 - 🎯 **卡片微动效** —— hover 配图一次性 wiggle + 卡片上抬 + "阅读全文 →" 滑入；active 0.985 下沉反馈
 - 🔤 **霞鹜文楷** —— LXGW WenKai Screen via jsDelivr CDN，按字符 chunk 拆分
 - 🇨🇳 **中文友好** —— `lang="zh-CN"`、中文日期、中文字数 + 阅读时长、正文宽度 ≤ 960px（阅读上限）
-- 🔍 **Pagefind 搜索** —— 静态全文索引，overlay popover 风格（按 `/` 全局打开）
+- 🔍 **Pagefind 搜索** —— 静态全文索引，浮窗 flex 居中（大屏阶梯加宽 560/640/740px），按 `/` 全局打开
 - 🎵 **音乐播放器** —— APlayer + MetingJS，固定右下角，可换网易云任意歌单
-- ✨ **鼠标拖尾** —— 三色斜方块短拖尾，自动跳过触屏 + 减少动画偏好
+- ✨ **鼠标拖尾** —— 空心几何菱形 + 三角形 3:1 混搭（粉/蓝/紫三色 + 描边 + 发光），自动跳过触屏 + 减少动画偏好
 - 📌 **置顶机制** —— frontmatter `featured: true`，列表暖色金边大卡
 - 🏷️ **分类 + 标签** —— 5 个枚举分类 + 自由标签，自动生成聚合页
-- 🔗 **社交** —— GitHub / 哔哩哔哩 / X 一字排开
+- 🔗 **社交** —— GitHub / 哔哩哔哩 / X / 邮箱，统一 40px 圆形玻璃按钮（默认灰、hover 染主题色）
 
 ## 写新文章
 
@@ -175,7 +178,9 @@ git push
 | 首页 Now 区内容 | `src/pages/index.astro` 的 `.now-grid` 块 |
 | 关于页技术栈/项目 | `src/pages/about.astro` 顶部的 `featured` 和 `stack` 数组 |
 | 首页打字机短句 | `src/pages/index.astro` 的 `typeLines` 数组 |
-| 鼠标拖尾颜色/速度 | `src/components/CursorTrail.astro` |
+| 鼠标拖尾颜色/速度/形状 | `src/components/CursorTrail.astro`（colors 数组 + MAX/LIFE/throttle 常量） |
+| TOC 主动态色 | `src/components/TableOfContents.astro` 里搜 `#c2185b` |
+| Header 自动隐藏阈值 | `src/components/Header.astro` 里 `TOP_LOCK`（贴顶锁定区）+ `THRESH`（抖动阈值） |
 
 ## 项目惯例（重要！别再踩这些坑）
 
@@ -191,6 +196,11 @@ git push
 8. **全局 `box-sizing: border-box`** 必须有，否则 mobile 按钮 width:100% + padding 会溢出
 9. **`align-items: center` + 内部高列表 = 坑**：列表会被居中导致 translateY 数学错乱——必须用内层 `.window` 包裹 + `position: absolute` 列表（见 ticker 实现）
 10. **博客列表卡片用单列横向 + 奇偶交错**——置顶博文必须用独立大图样式差异化，不能只靠徽章
+11. **TOC 等组件的 inline script 必须包 DOMContentLoaded**——`<script is:inline>` 在 HTML 解析到位置时立即执行，那时 `.prose` 等后续元素还没渲染
+12. **滚动跟随必须用 `transform: translateY()` 而不是 `top`**——前者走 GPU 合成层，后者每帧触发 layout 重排，加上 `backdrop-filter` 直接掉帧
+13. **跨组件协调用 body class**——`body.has-toc`、`body.header-hidden`、`body.drawer-open` 等，让 CSS 选择器单点联动多个组件，避免 prop drilling
+14. **CSS 特异性陷阱**：相同特异性按源序后写赢——想覆盖必须显式提高一档（如 `nav h2 a:hover` 胜过 `nav a:hover`）
+15. **数学最优解：6 = LCM(2, 3)**——首页最近文章展示 6 篇，2 列 / 3 列 grid 都能整齐填满，无孤儿尾巴
 
 ## License
 
