@@ -684,9 +684,11 @@ const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 		align-items: center;
 		min-width: 0;
 		margin: 0 0.4em;
-		height: 2.4em;
-		padding: 0 0.9em 0 0.7em;
-		font-size: 0.85em;
+		/* 与博文页 TOC 浮条 (toc-mobile-trigger) 视觉一致：
+		   高度 3em / 字号 0.9em / padding 与描边/阴影完全一致 */
+		height: 3em;
+		padding: 0 0.85em 0 0.7em;
+		font-size: 0.9em;
 		line-height: 1.4;
 		background: rgba(255, 255, 255, 0.5);
 		border: 1px solid rgba(255, 255, 255, 0.55);
@@ -732,7 +734,7 @@ const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 		animation: ticker-roll calc(var(--ticker-count, 5) * 5s) cubic-bezier(0.7, 0, 0.3, 1) infinite;
 	}
 	.ticker-list li {
-		height: 2.4em;
+		height: 3em;
 		display: flex;
 		align-items: center;
 		min-width: 0;
