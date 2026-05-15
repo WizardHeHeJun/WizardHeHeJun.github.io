@@ -445,6 +445,21 @@ const typeLines = [
 					font-size: 1.3em;
 				}
 			}
+
+			/* —— 大屏：放宽 main 同时锁死「最近写了点啥」为 3 列保留 3×2 布局 —— */
+			@media (min-width: 1400px) {
+				main {
+					width: min(1280px, 100% - 4em);
+				}
+				.post-cards {
+					grid-template-columns: repeat(3, 1fr);
+				}
+			}
+			@media (min-width: 1800px) {
+				main {
+					width: min(1440px, 100% - 6em);
+				}
+			}
 		</style>
 	</body>
 </html>

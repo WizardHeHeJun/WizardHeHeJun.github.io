@@ -481,6 +481,18 @@ const stack = [
 					min-width: auto;
 				}
 			}
+
+			/* —— 大屏：放宽内容范围 —— */
+			@media (min-width: 1400px) {
+				main {
+					width: min(1000px, 100% - 4em);
+				}
+			}
+			@media (min-width: 1800px) {
+				main {
+					width: min(1140px, 100% - 6em);
+				}
+			}
 		</style>
 	</body>
 </html>

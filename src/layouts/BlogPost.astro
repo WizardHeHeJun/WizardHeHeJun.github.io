@@ -70,6 +70,15 @@ const {
 					padding: 3em 3em;
 				}
 			}
+			@media (min-width: 1800px) {
+				.hero-image {
+					width: min(1440px, 100% - 6em);
+				}
+				.prose {
+					width: min(1100px, 100% - 6em);
+					padding: 3em 3.5em;
+				}
+			}
 			@media (max-width: 640px) {
 				.prose {
 					padding: 1.6em 1.2em;
@@ -82,6 +91,11 @@ const {
 			@media (min-width: 1400px) {
 				.comments-wrap {
 					width: min(960px, 100% - 4em);
+				}
+			}
+			@media (min-width: 1800px) {
+				.comments-wrap {
+					width: min(1100px, 100% - 6em);
 				}
 			}
 			.title {
