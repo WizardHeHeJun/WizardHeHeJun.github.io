@@ -207,6 +207,49 @@ const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 			});
 		}
 	})();
+
+	/* —— 滚动智能隐藏：下滑藏 / 上滑现 / 贴顶时永远显示 —— */
+	(() => {
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		const header = document.querySelector('header');
+		if (!header) return;
+		const TOP_LOCK = 80;
+		const THRESH = 6;
+		let lastY = window.scrollY;
+		let raf = 0;
+
+		const update = () => {
+			const y = window.scrollY;
+			const diff = y - lastY;
+			if (document.body.classList.contains('drawer-open')) {
+				header.classList.remove('is-hidden');
+				lastY = y;
+				raf = 0;
+				return;
+			}
+			if (Math.abs(diff) < THRESH) {
+				raf = 0;
+				return;
+			}
+			if (y < TOP_LOCK) {
+				header.classList.remove('is-hidden');
+			} else if (diff > 0) {
+				header.classList.add('is-hidden');
+			} else {
+				header.classList.remove('is-hidden');
+			}
+			lastY = y;
+			raf = 0;
+		};
+
+		window.addEventListener(
+			'scroll',
+			() => {
+				if (!raf) raf = requestAnimationFrame(update);
+			},
+			{ passive: true },
+		);
+	})();
 </script>
 
 <style>
@@ -221,6 +264,16 @@ const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 		position: sticky;
 		top: 0;
 		z-index: 10;
+		transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+		will-change: transform;
+	}
+	header.is-hidden {
+		transform: translateY(-100%);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		header {
+			transition: none;
+		}
 	}
 	h2 {
 		margin: 0;
