@@ -170,16 +170,31 @@ textarea.form-control:focus {
 	color: rgb(85, 99, 130);
 	font-weight: 600;
 }
-.gsc-direct-reaction-buttons,
+.gsc-direct-reaction-buttons {
+	background: transparent !important;
+	border: none !important;
+}
 .gsc-direct-reaction-button,
 .gsc-reactions-popover-button {
-	background: rgba(255, 255, 255, 0.5) !important;
-	border: 1px solid rgba(255, 255, 255, 0.6) !important;
+	background: transparent !important;
+	border: 1px solid rgba(255, 255, 255, 0.45) !important;
 	color: rgb(85, 99, 130) !important;
 }
 .gsc-direct-reaction-button:hover,
 .gsc-reactions-popover-button:hover {
-	background: rgba(255, 255, 255, 0.85) !important;
+	background: rgba(255, 93, 143, 0.08) !important;
+	border-color: rgba(255, 93, 143, 0.35) !important;
+}
+/* 点过的反应（aria-pressed=true / has-reacted）给一个淡粉色提示 */
+.gsc-direct-reaction-button[aria-pressed="true"],
+.gsc-direct-reaction-button.has-reacted {
+	background: rgba(255, 93, 143, 0.15) !important;
+	border-color: rgba(255, 93, 143, 0.4) !important;
+}
+/* emoji 本身的背景也清掉，避免 span 自带任何盒子色 */
+.gsc-direct-reaction-button-emoji,
+.gsc-direct-reaction-button-count {
+	background: transparent !important;
 }
 
 /* —— 8. 主按钮（评论提交 / 登录）→ 粉色渐变 —— */
