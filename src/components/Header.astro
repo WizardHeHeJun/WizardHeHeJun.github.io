@@ -742,14 +742,26 @@ const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 	.ticker-list a {
 		display: block;
 		max-width: 100%;
+		padding: 0 0.6em;
 		color: rgb(var(--gray-dark));
 		text-decoration: none;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		/* 让 focus / 选中态也走圆角胶囊样式，避免方形高亮跟圆角胶囊冲突 */
+		border-radius: 999px;
+		outline: none;
+		-webkit-tap-highlight-color: transparent;
+		transition: background 0.18s ease, color 0.18s ease;
 	}
-	.ticker-list a:hover {
-		color: var(--accent);
+	.ticker-list a:hover,
+	.ticker-list a:focus-visible {
+		color: #ff5d8f;
+		background: rgba(255, 93, 143, 0.1);
+	}
+	.ticker-list a::selection {
+		background: rgba(255, 93, 143, 0.3);
+		color: rgb(var(--gray-dark));
 	}
 	/* 6 items 在容器内（5 + 1 复制实现无缝循环）。
 	   translateY 百分比相对自身高度，每次移动 100%/6 ≈ 16.667% 切换一项 */
