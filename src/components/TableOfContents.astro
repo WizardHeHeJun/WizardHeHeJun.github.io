@@ -30,7 +30,7 @@
 </div>
 
 <script is:inline>
-	(() => {
+	const initTOC = () => {
 		const prose = document.querySelector('.prose');
 		if (!prose) return;
 		const headings = Array.from(prose.querySelectorAll('h2, h3'));
@@ -167,7 +167,13 @@
 			{ passive: true },
 		);
 		recompute();
-	})();
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initTOC);
+	} else {
+		initTOC();
+	}
 </script>
 
 <style is:global>
