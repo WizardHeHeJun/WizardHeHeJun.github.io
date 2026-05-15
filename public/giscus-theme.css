@@ -9,9 +9,9 @@
 /* —— 1. 全局变量微调（沿用 light 主色，只换面板/边框） —— */
 main {
 	--color-canvas-default: transparent;
-	--color-canvas-overlay: rgba(255, 255, 255, 0.78);
-	--color-canvas-inset: rgba(255, 255, 255, 0.35);
-	--color-canvas-subtle: rgba(255, 255, 255, 0.45);
+	--color-canvas-overlay: rgba(255, 255, 255, 0.55);
+	--color-canvas-inset: rgba(255, 255, 255, 0.25);
+	--color-canvas-subtle: rgba(255, 255, 255, 0.35);
 
 	--color-border-default: rgba(255, 255, 255, 0.55);
 	--color-border-muted: rgba(0, 0, 0, 0.06);
@@ -22,9 +22,9 @@ main {
 	--color-accent-subtle: rgba(255, 93, 143, 0.12);
 
 	--color-btn-text: #1f2937;
-	--color-btn-bg: rgba(255, 255, 255, 0.7);
-	--color-btn-border: rgba(255, 255, 255, 0.6);
-	--color-btn-hover-bg: rgba(255, 255, 255, 0.9);
+	--color-btn-bg: rgba(255, 255, 255, 0.5);
+	--color-btn-border: rgba(255, 255, 255, 0.55);
+	--color-btn-hover-bg: rgba(255, 255, 255, 0.8);
 
 	--color-btn-primary-text: #ffffff;
 	--color-btn-primary-bg: #ff5d8f;
@@ -35,7 +35,34 @@ main {
 	background: transparent !important;
 }
 
-/* —— 2. 把 giscus 输出的所有面板都强制透明 —— */
+/* —— 2. 强力清扫：giscus 内部用 Primer / Tailwind 的工具类硬指定背景色，
+       这些不走 CSS 变量，需要直接覆盖。
+       策略：所有 Primer 背景类全部透明，再针对功能元素重加玻璃质感 —— */
+.color-bg-default,
+.color-bg-overlay,
+.color-bg-inset,
+.color-bg-subtle,
+.color-bg-muted,
+.color-bg-canvas,
+.color-bg-canvas-default,
+.color-bg-canvas-inset,
+.color-bg-canvas-subtle,
+.color-bg-primary,
+.color-bg-secondary,
+.color-bg-tertiary,
+.color-bg-info,
+.color-bg-info-emphasis,
+.bg-white,
+.bg-gray-50,
+.bg-gray-100,
+.bg-gray-200,
+.dark\:bg-black,
+[class*="bg-canvas"],
+[class*="color-bg-"] {
+	background-color: transparent !important;
+}
+
+/* —— 3. giscus 顶层面板与时间线全部透明 —— */
 .gsc-main,
 .gsc-timeline,
 .gsc-header,
@@ -46,62 +73,115 @@ main {
 .gsc-replies,
 .gsc-reply,
 .gsc-pagination,
-.gsc-loading {
+.gsc-loading,
+.gsc-tabs,
+.gsc-comment-box-tabs,
+.gsc-comment-box-tab,
+.gsc-comment-box-bottom,
+.gsc-comment-content,
+.gsc-comment-header,
+.gsc-comment-author,
+.gsc-comment-author-avatar,
+.gsc-comment-footer {
 	background: transparent !important;
+	background-color: transparent !important;
 }
 
-/* —— 3. 输入框 / textarea / 代码块 → 水色玻璃感 —— */
-.gsc-comment-box-textarea,
-.gsc-comment-box-write,
-.gsc-comment-box-preview,
-textarea.gsc-comment-box-textarea {
-	background: rgba(255, 255, 255, 0.55) !important;
-	border-color: rgba(255, 255, 255, 0.65) !important;
-	backdrop-filter: blur(10px) saturate(160%);
-	-webkit-backdrop-filter: blur(10px) saturate(160%);
-	border-radius: 10px !important;
-}
-
-.gsc-comment-box-tabs {
-	background: transparent !important;
-	border-color: rgba(0, 0, 0, 0.08) !important;
-}
-
-/* —— 4. 已发表的评论卡片：浅玻璃 —— */
-.gsc-comment > .gsc-comment-box,
-.gsc-comment-content {
-	background: rgba(255, 255, 255, 0.45) !important;
+/* —— 4. 「最早 / 最新」排序 tab 组（segmented control） —— */
+.gsc-tab-list,
+[role="tablist"] {
+	background: rgba(255, 255, 255, 0.4) !important;
 	border: 1px solid rgba(255, 255, 255, 0.55) !important;
-	border-radius: 12px !important;
+	border-radius: 999px !important;
+	backdrop-filter: blur(8px) saturate(160%);
+	-webkit-backdrop-filter: blur(8px) saturate(160%);
+	overflow: hidden;
+}
+.gsc-tab,
+[role="tab"] {
+	background: transparent !important;
+	border: none !important;
+	color: rgb(85, 99, 130) !important;
+	transition: background 0.15s ease, color 0.15s ease;
+}
+.gsc-tab:hover,
+[role="tab"]:hover {
+	background: rgba(255, 255, 255, 0.5) !important;
+	color: #ff5d8f !important;
+}
+.gsc-tab[aria-selected="true"],
+[role="tab"][aria-selected="true"] {
+	background: rgba(255, 255, 255, 0.85) !important;
+	color: #ff5d8f !important;
+	font-weight: 600;
+}
+
+/* —— 5. 评论卡片：浅玻璃 + 柔边 —— */
+.gsc-comment {
+	background: rgba(255, 255, 255, 0.4) !important;
+	border: 1px solid rgba(255, 255, 255, 0.55) !important;
+	border-radius: 14px !important;
 	backdrop-filter: blur(10px) saturate(160%);
 	-webkit-backdrop-filter: blur(10px) saturate(160%);
 	box-shadow: 0 2px 8px rgba(31, 38, 135, 0.06);
 }
-
-.gsc-comment-header {
+.gsc-comment > .gsc-comment-box {
 	background: transparent !important;
-	border-bottom-color: rgba(0, 0, 0, 0.06) !important;
+	border: none !important;
+	box-shadow: none !important;
+}
+.gsc-comment-header {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
 }
 
-/* —— 5. 反应（reactions）区块 —— */
+/* —— 6. 输入框 / textarea / 编辑器：水色玻璃 —— */
+.gsc-comment-box-textarea,
+.gsc-comment-box-write,
+.gsc-comment-box-preview,
+textarea,
+textarea.form-control {
+	background: rgba(255, 255, 255, 0.5) !important;
+	border: 1px solid rgba(255, 255, 255, 0.6) !important;
+	backdrop-filter: blur(8px) saturate(160%);
+	-webkit-backdrop-filter: blur(8px) saturate(160%);
+	border-radius: 10px !important;
+	color: #1f2937 !important;
+}
+textarea::placeholder {
+	color: rgba(85, 99, 130, 0.7) !important;
+}
+
+/* —— 整个评论框外壳（form 容器） —— */
+.gsc-comment-box {
+	background: transparent !important;
+	border: 1px solid rgba(255, 255, 255, 0.55) !important;
+	border-radius: 14px !important;
+	backdrop-filter: blur(10px) saturate(160%);
+	-webkit-backdrop-filter: blur(10px) saturate(160%);
+}
+
+/* —— 7. 反应（reactions） —— */
 .gsc-reactions-count {
 	color: rgb(85, 99, 130);
 	font-weight: 600;
 }
-
 .gsc-direct-reaction-buttons,
-.gsc-direct-reaction-button {
-	background: rgba(255, 255, 255, 0.55) !important;
+.gsc-direct-reaction-button,
+.gsc-reactions-popover-button {
+	background: rgba(255, 255, 255, 0.5) !important;
 	border: 1px solid rgba(255, 255, 255, 0.6) !important;
+	color: rgb(85, 99, 130) !important;
 }
-.gsc-direct-reaction-button:hover {
+.gsc-direct-reaction-button:hover,
+.gsc-reactions-popover-button:hover {
 	background: rgba(255, 255, 255, 0.85) !important;
 }
 
-/* —— 6. 主按钮（提交评论 / 登录）→ 站点粉色渐变 —— */
+/* —— 8. 主按钮（评论提交 / 登录）→ 粉色渐变 —— */
 .gsc-comment-box-buttons .btn-primary,
 .btn-primary {
 	background: linear-gradient(135deg, #ff7eb3 0%, #ff5d8f 100%) !important;
+	background-color: #ff5d8f !important;
 	border-color: rgba(255, 93, 143, 0.4) !important;
 	color: #ffffff !important;
 	box-shadow: 0 4px 12px rgba(255, 93, 143, 0.3) !important;
@@ -109,12 +189,12 @@ textarea.gsc-comment-box-textarea {
 .gsc-comment-box-buttons .btn-primary:hover,
 .btn-primary:hover {
 	background: linear-gradient(135deg, #ff8dbe 0%, #ff6e9c 100%) !important;
+	background-color: #ff7eb3 !important;
 }
 
-/* —— 7. 排序按钮组 / 普通按钮 —— */
-.gsc-comments > .gsc-header .gsc-tab,
+/* —— 9. 普通按钮（次级按钮、编辑、回复等） —— */
 .btn {
-	background: rgba(255, 255, 255, 0.55) !important;
+	background: rgba(255, 255, 255, 0.5) !important;
 	border-color: rgba(255, 255, 255, 0.6) !important;
 	color: #1f2937 !important;
 }
@@ -122,17 +202,18 @@ textarea.gsc-comment-box-textarea {
 	background: rgba(255, 255, 255, 0.85) !important;
 }
 
-/* —— 8. 边框柔化 —— */
-.gsc-header,
-.gsc-comments {
-	border-color: rgba(0, 0, 0, 0.06) !important;
-}
-
-/* —— 9. 链接颜色统一 accent —— */
+/* —— 10. 链接颜色统一站点 accent —— */
 a,
 .gsc-comment a {
 	color: #2337ff !important;
 }
 a:hover {
 	color: #ff5d8f !important;
+}
+
+/* —— 11. 边框统一柔化 —— */
+[class*="border"],
+.gsc-header,
+.gsc-comments {
+	border-color: rgba(0, 0, 0, 0.06) !important;
 }
