@@ -224,21 +224,47 @@ textarea.form-control:focus {
 	border-color: rgba(255, 93, 143, 0.35) !important;
 }
 
-/* —— 9.1. 「最早 / 最新」选中态 ——
-   giscus BumpButton 把当前激活的那一个设为 disabled（再点也无意义）。
-   所以选中即 :disabled —— 直接给一个粉色渐变填充。 */
-.btn:disabled,
-.btn[disabled],
-.btn:not(.btn-primary)[aria-current],
-.btn:not(.btn-primary)[aria-current="true"],
-.btn:not(.btn-primary)[aria-current="page"] {
+/* —— 9.1. 「最早 / 最新」 BtnGroup 选中态 ——
+   giscus 实际 DOM:
+     <li aria-current="true|false" class="BtnGroup-item">
+       <button class="btn">最早/最新</button>
+     </li>
+   active 标记在父 <li> 上，不是 button —— 选择器要从父级走 */
+
+/* BtnGroup 容器外观：胶囊化整组 */
+.BtnGroup {
+	background: transparent !important;
+	border: 1px solid rgba(255, 255, 255, 0.45) !important;
+	border-radius: 999px !important;
+	overflow: hidden;
+	display: inline-flex;
+	padding: 2px;
+}
+.BtnGroup-item {
+	background: transparent !important;
+	border: none !important;
+	margin: 0 !important;
+	display: inline-block;
+}
+.BtnGroup-item .btn {
+	background: transparent !important;
+	border: none !important;
+	border-radius: 999px !important;
+	color: rgb(85, 99, 130) !important;
+	padding: 0.3em 0.9em !important;
+	transition: background 0.15s ease, color 0.15s ease;
+}
+.BtnGroup-item .btn:hover {
+	background: rgba(255, 93, 143, 0.08) !important;
+	color: #ff5d8f !important;
+}
+/* 选中态在父 <li> 的 aria-current="true" 上 */
+.BtnGroup-item[aria-current="true"] .btn,
+li[aria-current="true"] > .btn {
 	background: linear-gradient(135deg, #ff7eb3 0%, #ff5d8f 100%) !important;
 	color: #ffffff !important;
-	border-color: rgba(255, 93, 143, 0.5) !important;
-	box-shadow: 0 2px 6px rgba(255, 93, 143, 0.25) !important;
-	opacity: 1 !important;
-	cursor: default !important;
 	font-weight: 600;
+	box-shadow: 0 2px 6px rgba(255, 93, 143, 0.25) !important;
 }
 
 /* —— 10. 链接颜色统一站点 accent —— */
