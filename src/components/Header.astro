@@ -226,7 +226,9 @@ const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 	h2 a.active {
 		text-decoration: none;
 	}
-	h2 a:hover {
+	/* 站名是 layout 标识，不是页签——hover 不给反馈。
+	   用 nav h2 a 提升选择器特异性，胜过下面的 nav a:hover */
+	nav h2 a:hover {
 		color: var(--black);
 		border-bottom-color: transparent;
 		background: transparent;
