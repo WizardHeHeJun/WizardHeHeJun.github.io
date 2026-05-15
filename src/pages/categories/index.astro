@@ -50,7 +50,7 @@ const categories = [...categoryMap.entries()].sort((a, b) => b[1] - a[1]);
 				padding: 0;
 				margin: 0;
 				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+				grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr));
 				gap: 1em;
 			}
 			.cat-list li a {

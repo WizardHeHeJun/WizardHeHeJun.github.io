@@ -80,7 +80,8 @@ const memories: Memory[] = [...(memoriesData as Memory[])].sort(
 				padding: 0;
 				margin: 0;
 				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+				/* min(280px, 100%) 防止窄屏父容器 < 280px 时卡片撑出溢出 */
+				grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
 				gap: 1.2em;
 			}
 			.memory-card {

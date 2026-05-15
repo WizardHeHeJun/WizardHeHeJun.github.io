@@ -195,7 +195,7 @@ const tagCount = new Set(posts.flatMap((p) => p.data.tags)).size;
 	@media (max-width: 960px) {
 		.sidebar {
 			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
 			gap: 0.8em;
 		}
 	}
