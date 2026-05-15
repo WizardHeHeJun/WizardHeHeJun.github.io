@@ -30,6 +30,25 @@
 	</div>
 </aside>
 
+<!-- 右下角浮动按钮组：回到顶部 / 滚到底部 / 关闭。窄屏可见（桌面已在 TOC 侧栏内部有相同按钮） -->
+<div class="toc-fab" id="toc-fab" hidden>
+	<button class="toc-fab-btn" type="button" data-fab-scroll-top aria-label="回到顶部">
+		<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
+			><polyline points="18 15 12 9 6 15"></polyline></svg
+		>
+	</button>
+	<button class="toc-fab-btn" type="button" data-fab-scroll-bottom aria-label="滚到底部">
+		<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
+			><polyline points="6 9 12 15 18 9"></polyline></svg
+		>
+	</button>
+	<button class="toc-fab-btn toc-fab-close" type="button" data-fab-close aria-label="隐藏">
+		<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
+			><line x1="6" y1="6" x2="18" y2="18"></line><line x1="6" y1="18" x2="18" y2="6"></line></svg
+		>
+	</button>
+</div>
+
 <div class="toc-mobile" id="toc-mobile" hidden>
 	<button class="toc-mobile-trigger" id="toc-mobile-trigger" aria-expanded="false" aria-controls="toc-mobile-panel">
 		<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -203,12 +222,19 @@
 		window.addEventListener('resize', onScrollTop, { passive: true });
 		updateTocTop();
 
-		/* —— 两个跳转按钮 —— */
-		document.querySelector('[data-scroll-top]')?.addEventListener('click', () => {
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-		});
-		document.querySelector('[data-scroll-bottom]')?.addEventListener('click', () => {
-			window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+		/* —— 跳转按钮：桌面 sidebar 内 + 移动 FAB 浮动 —— */
+		const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+		const scrollBottom = () => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+		document.querySelectorAll('[data-scroll-top], [data-fab-scroll-top]').forEach((b) =>
+			b.addEventListener('click', scrollTop),
+		);
+		document.querySelectorAll('[data-scroll-bottom], [data-fab-scroll-bottom]').forEach((b) =>
+			b.addEventListener('click', scrollBottom),
+		);
+		const fab = document.getElementById('toc-fab');
+		if (fab) fab.hidden = false;
+		document.querySelector('[data-fab-close]')?.addEventListener('click', () => {
+			fab?.classList.add('is-dismissed');
 		});
 	};
 
@@ -487,5 +513,60 @@
 	.prose h2,
 	.prose h3 {
 		scroll-margin-top: 80px;
+	}
+
+	/* ━━━━━━━━━━ 右下角浮动按钮组 FAB ━━━━━━━━━━ */
+	.toc-fab {
+		position: fixed;
+		right: 20px;
+		bottom: 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		z-index: 30;
+		opacity: 1;
+		transition: opacity 0.25s ease, transform 0.25s ease;
+	}
+	.toc-fab.is-dismissed {
+		opacity: 0;
+		transform: translateX(60px);
+		pointer-events: none;
+	}
+	/* 桌面已经有 sidebar 内的按钮，FAB 收起减少重复 */
+	@media (min-width: 1280px) {
+		.toc-fab {
+			display: none;
+		}
+	}
+	.toc-fab-btn {
+		width: 38px;
+		height: 38px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		font-family: inherit;
+		color: #c2185b;
+		background: rgba(255, 255, 255, 0.85);
+		border: 1px solid rgba(255, 144, 192, 0.3);
+		border-radius: 50%;
+		backdrop-filter: blur(10px) saturate(170%);
+		-webkit-backdrop-filter: blur(10px) saturate(170%);
+		box-shadow: 0 4px 12px rgba(31, 38, 135, 0.12);
+		cursor: pointer;
+		transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+	}
+	.toc-fab-btn:hover {
+		background: linear-gradient(135deg, rgba(255, 209, 228, 0.95), rgba(255, 183, 197, 0.9));
+		transform: translateY(-2px);
+		box-shadow: 0 6px 16px rgba(255, 144, 192, 0.3);
+	}
+	.toc-fab-close {
+		color: rgb(var(--gray));
+		font-size: 1.1em;
+	}
+	.toc-fab-close:hover {
+		background: rgba(0, 0, 0, 0.06);
+		color: rgb(var(--gray-dark));
 	}
 </style>
