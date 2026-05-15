@@ -54,10 +54,13 @@
 
 <div class="toc-mobile" id="toc-mobile" hidden>
 	<button class="toc-mobile-trigger" id="toc-mobile-trigger" aria-expanded="false" aria-controls="toc-mobile-panel">
-		<!-- 书签/章节图标 — 和 header 的 hamburger 区分开，避免两个 ☰ 视觉冲突 -->
-		<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-			><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg
-		>
+		<!-- 阅读进度环：随滚动实时填充 -->
+		<svg class="toc-progress-ring" viewBox="0 0 36 36" width="22" height="22" aria-hidden="true">
+			<circle class="toc-progress-bg" cx="18" cy="18" r="15" fill="none" stroke="rgba(0, 0, 0, 0.12)" stroke-width="3"></circle>
+			<circle class="toc-progress-arc" id="toc-progress-arc" cx="18" cy="18" r="15" fill="none" stroke="#c2185b" stroke-width="3"
+				stroke-dasharray="94.25" stroke-dashoffset="94.25" stroke-linecap="round"
+				transform="rotate(-90 18 18)"></circle>
+		</svg>
 		<span class="toc-mobile-current" id="toc-mobile-current">目录</span>
 		<svg class="toc-chevron" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
 			><polyline points="6 9 12 15 18 9"></polyline></svg
@@ -204,6 +207,24 @@
 			{ passive: true },
 		);
 		recompute();
+
+		/* —— 阅读进度环：跟随滚动实时填充 ——
+		   r=15 时周长 = 2π·15 ≈ 94.25。dashoffset 从 94.25 (空) → 0 (满) */
+		const progressArc = document.getElementById('toc-progress-arc');
+		const PROGRESS_CIRCUMFERENCE = 94.25;
+		const updateProgress = () => {
+			if (!progressArc) return;
+			const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+			const progress = docHeight > 0 ? Math.min(1, Math.max(0, window.scrollY / docHeight)) : 0;
+			progressArc.style.strokeDashoffset = String(PROGRESS_CIRCUMFERENCE * (1 - progress));
+		};
+		let rafProgress = 0;
+		const onScrollProgress = () => {
+			if (!rafProgress) rafProgress = requestAnimationFrame(() => { updateProgress(); rafProgress = 0; });
+		};
+		window.addEventListener('scroll', onScrollProgress, { passive: true });
+		window.addEventListener('resize', onScrollProgress, { passive: true });
+		updateProgress();
 
 		/* —— TOC 位置：未滚出 hero 时贴在 hero 下方，滚出后吸顶
 		   用 transform: translateY 走 GPU 合成层，避免每帧 layout 重排 —— */
@@ -554,9 +575,18 @@
 				inset 0 -1px 2px rgba(31, 38, 135, 0.04),
 				0 1px 4px rgba(31, 38, 135, 0.08);
 		}
-		/* 当前章节标题居中显示在 hamburger 与 chevron 之间 */
+		/* 当前章节标题左对齐——与左侧的进度环紧贴呼应 */
 		body.has-toc .toc-mobile-current {
-			text-align: center;
+			text-align: left;
+		}
+		/* 进度环动画过渡：让填充更顺滑，避免每次微小滚动都跳跃 */
+		.toc-progress-arc {
+			transition: stroke-dashoffset 0.15s linear;
+		}
+		@media (prefers-reduced-motion: reduce) {
+			.toc-progress-arc {
+				transition: none;
+			}
 		}
 		/* 下拉面板从胶囊底部对齐左右 */
 		body.has-toc .toc-mobile-panel {
