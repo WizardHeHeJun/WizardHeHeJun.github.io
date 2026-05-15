@@ -526,8 +526,9 @@
 		body.has-toc .toc-mobile {
 			position: fixed !important;
 			top: 7px;
-			left: 50px;
-			right: 48px;
+			/* 缩小左右间距，让 bar 横向占满 hamburger 与 search 之间的空间 */
+			left: 40px;
+			right: 40px;
 			width: auto !important;
 			max-width: none;
 			margin: 0 !important;
@@ -541,7 +542,7 @@
 		/* trigger 改成 ticker 同款玻璃胶囊 */
 		body.has-toc .toc-mobile-trigger {
 			height: 2.4em;
-			padding: 0 0.85em 0 0.7em;
+			padding: 0 0.7em;
 			font-size: 0.85em;
 			background: rgba(255, 255, 255, 0.5);
 			border: 1px solid rgba(255, 255, 255, 0.55);
@@ -549,6 +550,10 @@
 				inset 0 1px 2px rgba(255, 255, 255, 0.4),
 				inset 0 -1px 2px rgba(31, 38, 135, 0.04),
 				0 1px 4px rgba(31, 38, 135, 0.08);
+		}
+		/* 当前章节标题居中显示在 hamburger 与 chevron 之间 */
+		body.has-toc .toc-mobile-current {
+			text-align: center;
 		}
 		/* 下拉面板从胶囊底部对齐左右 */
 		body.has-toc .toc-mobile-panel {
