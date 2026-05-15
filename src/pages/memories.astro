@@ -153,6 +153,18 @@ const memories: Memory[] = [...(memoriesData as Memory[])].sort(
 					transform: none;
 				}
 			}
+
+			/* —— 大屏：放宽画廊范围 —— */
+			@media (min-width: 1400px) {
+				main {
+					width: min(1280px, 100% - 4em);
+				}
+			}
+			@media (min-width: 1800px) {
+				main {
+					width: min(1440px, 100% - 6em);
+				}
+			}
 		</style>
 	</body>
 </html>

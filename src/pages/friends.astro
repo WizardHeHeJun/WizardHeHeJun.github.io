@@ -136,6 +136,18 @@ import friends from '../data/friends.json';
 			.comments-wrap {
 				margin-top: 2em;
 			}
+
+			/* —— 大屏：放宽内容范围 —— */
+			@media (min-width: 1400px) {
+				main {
+					width: min(1200px, 100% - 4em);
+				}
+			}
+			@media (min-width: 1800px) {
+				main {
+					width: min(1360px, 100% - 6em);
+				}
+			}
 		</style>
 	</body>
 </html>
