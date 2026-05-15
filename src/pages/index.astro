@@ -11,7 +11,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
-const recent = posts.slice(0, 3);
+const recent = posts.slice(0, 4);
 
 // Hero 的打字机短句池——爱莉希雅口吻，刷新会随机一句
 const typeLines = [
@@ -114,13 +114,6 @@ const typeLines = [
 						<div>
 							<div class="now-title">某游戏厂</div>
 							<div class="now-sub">担任测试工程师</div>
-						</div>
-					</div>
-					<div class="now-item">
-						<div class="now-icon">💻</div>
-						<div>
-							<div class="now-title">在做 KNG</div>
-							<div class="now-sub">知识驱动型 Agent 框架</div>
 						</div>
 					</div>
 					<div class="now-item">
