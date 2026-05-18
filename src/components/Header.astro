@@ -392,6 +392,16 @@ const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 		display: block;
 		width: 26px !important;
 		height: 26px !important;
+		fill: #222939;
+		color: #222939;
+	}
+	.social-links svg path {
+		fill: currentColor;
+	}
+	.social-links a:hover svg,
+	.social-links a:hover svg path {
+		fill: #c2185b;
+		color: #c2185b;
 	}
 
 	/* —— 汉堡按钮：默认隐藏，≤720 才出现 —— */
