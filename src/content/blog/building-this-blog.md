@@ -1,12 +1,12 @@
 ---
 title: '我用 Astro + GitHub Pages 搭了这个博客'
-description: '从零搭起来的全过程——技术选型、踩过的坑、玻璃风、Pagefind 搜索、音乐播放器、几何鼠标拖尾、parallax 背景、四档响应式 + 移动抽屉 + 嵌入式 ticker + 文章 TOC + Header 自动隐藏……一次 commit 半天的折腾日记。'
+description: '从零搭起来的全过程——技术选型、踩过的坑、玻璃风、Pagefind 搜索、giscus 评论、回忆相册、画板、几何鼠标拖尾、parallax 背景、四档响应式 + 移动抽屉 + 文章 TOC + 阅读进度环……一次 commit 半天的折腾日记。'
 pubDate: 'May 14 2026'
-updatedDate: 'May 15 2026'
+updatedDate: 'May 18 2026'
 featured: true
 heroImage: '../../assets/blog/building-this-blog.jpg'
 category: '项目分享'
-tags: ['Astro', 'GitHub Pages', '博客', '毛玻璃', 'Pagefind', '霞鹜文楷', '响应式', '移动端', 'TOC']
+tags: ['Astro', 'GitHub Pages', '博客', '毛玻璃', 'Pagefind', '霞鹜文楷', '响应式', '移动端', 'TOC', 'giscus']
 ---
 
 ## 为什么要搭博客
@@ -351,6 +351,145 @@ nav h2 a:hover {
 @media (min-width: 1800px) { .search-popover { width: 740px; } }
 ```
 
+## 第六阶段：评论、互动、个人化
+
+桌面 + 移动 + 阅读体验都打磨好了，但博客缺一个**「让访客留下痕迹」**的入口。同时也意识到——纯静态站点不只是「写文章」的容器，还可以做更多有人情味的功能。这一阶段是最长的一次（一晚上接近 50 个 commit）。
+
+### 1. giscus 评论 + 表情反应
+
+挑评论方案时对比了 Disqus（广告 + 卡）、Utterances（已停更）、Waline（要后端 + DB），最后选 **giscus**——数据存 GitHub Discussions、零后端、自带 emoji 反应、免维护、深绑 GitHub 账号（对开发者博客来说反而是过滤垃圾评论的天然手段）。
+
+**接入流程**：
+1. 仓库 Settings → 开 Discussions → 新建 Announcements 分类
+2. 装 https://github.com/apps/giscus 授权仓库
+3. https://giscus.app 配置器拿 4 个 ID（repo / repoId / category / categoryId）
+
+**封装成 `<Comments>` 组件**：mapping/term/title/hint 都是 props，三个页面（博文 / 关于 / 友链）复用同一份。博文用 `mapping="pathname"`（自动跟 URL），关于/友链用 `mapping="specific" term="page-xxx"`（防止路径变动断关联）。
+
+### 2. 自定义 giscus 玻璃主题
+
+giscus 内置的 light 主题是奶油白底——跟我的水蓝玻璃风格冲突很重。giscus 支持 `data-theme={URL}` 加载自定义 CSS。
+
+写了 [`public/giscus-theme.css`](https://github.com/WizardHeHeJun/WizardHeHeJun.github.io/blob/main/public/giscus-theme.css)：`@import` 官方 light 然后覆盖关键变量 + 强力清扫所有 `.color-bg-*` / `.bg-white` 等 Primer/Tailwind 工具类背景全部透明。输入框、评论卡都改成低 alpha 玻璃 + 细描边。主按钮换成站点粉色渐变。
+
+**踩到的两个坑**：
+
+**坑 A：iframe 内部 `backdrop-filter` 无效**。giscus iframe 是独立渲染上下文，blur 看不到外层博客玻璃卡背后的水色——所以 blur 完全没用，反而让半透明白底显得更死。修法：放弃 blur，纯用极低 alpha（0.08）+ 细描边勾轮廓。
+
+**坑 B：iframe 缓存 theme CSS**。改了 `giscus-theme.css` 重部署，iframe 还在拉旧版。修法：URL 拼 `?v={unix-timestamp}`，每次 build 自动 cache-bust：
+```ts
+const themeVersion = Math.floor(Date.now() / 1000);
+const giscusTheme = `${siteOrigin}/giscus-theme.css?v=${themeVersion}`;
+```
+
+**坑 C：giscus 排序 BumpButton 的 DOM 反直觉**。「最早 / 最新」按钮的 active 标记不在 button 自己身上，而是在父 `<li aria-current="true">` 上。选择器要从父级走：`.BtnGroup-item[aria-current="true"] .btn`。
+
+### 3. 回忆相册
+
+加了一个 `/memories` 页——按日期倒序的图文卡片网格。JSON 数据驱动（`src/data/memories.json`，字段 `image / date / title / description?`），图片直接丢 `public/memories/`，路径写 `/memories/<文件名>`。
+
+每张卡：4:3 封面（hover 1.04× 放大）+ 中文日期 + 标题 + 可选描述。空状态有「等你把第一张照片放进来吧 ✨」占位文案。
+
+设计上故意没用 Astro `<Image>` 处理——这些是「随性记录」的图，不需要 Vite 哈希 + 强制裁剪，原图原貌就好。
+
+### 4. 画板
+
+一个不会保存的 HTML5 Canvas——「随手画几笔，反正离开就消失啦」。工具栏：6 色板 + 自定义颜色 picker + 1-30px 粗细滑块 + 橡皮 toggle + 清空。
+
+**关键技术点**：
+- **PointerEvents 统一**鼠标 + 触屏 + 触控笔，一套代码三种输入
+- **DPR 自适应**：`canvas.width = rect.width × devicePixelRatio` + `ctx.setTransform(dpr, ...)`——Retina 屏不糊
+- **窗口缩放保留笔迹**：用临时 canvas 截图后按新尺寸缩放重绘
+- **橡皮用 `globalCompositeOperation = 'destination-out'`**——真正抹掉像素而不是画白色，让底下水色玻璃透出来
+- **触屏防滚动**：`touch-action: none` 阻止边画边滑
+
+**清空 confirm 用自定义 modal**，不走原生 `confirm()`——原生弹窗丑且跟站点配色冲突。
+
+### 5. 头像 hover wiggle
+
+首页 / 关于 / blog sidebar 三处头像都加了鼠标悬停时一次性 0.6s 摆动（scale 1.08 + 旋转 ±8°/7°/-5°/3° 递减），cubic-bezier 末段 overshoot 给 bounce 感。`@keyframes avatar-wiggle` 抽到 `global.css` 三处复用——避免 `@keyframes` 在三个文件各写一遍。
+
+```css
+@keyframes avatar-wiggle {
+  0%, 100% { transform: scale(1) rotate(0); }
+  15%      { transform: scale(1.08) rotate(-8deg); }
+  35%      { transform: scale(1.08) rotate(7deg); }
+  55%      { transform: scale(1.08) rotate(-5deg); }
+  75%      { transform: scale(1.08) rotate(3deg); }
+}
+```
+
+必须有 `prefers-reduced-motion: reduce` 守卫。
+
+### 6. 移动 TOC 浮条加阅读进度环
+
+之前文章页移动版 TOC 浮条左侧是个静态的书签图标——改成**实时跟随滚动的粉色圆环**。SVG 两个同心圆（背景灰圆 + 粉色弧），用 `stroke-dasharray` + `stroke-dashoffset` 实现进度填充：
+
+```js
+const C = 87.96; // = 2π × 14（r=14 的圆周长）
+const progress = scrollY / (scrollHeight - innerHeight);
+arc.style.strokeDashoffset = String(C * (1 - progress));
+```
+
+配 `transition: stroke-dashoffset 0.15s linear` 让填充顺滑，`requestAnimationFrame` 节流。
+
+### 7. nav 重设计：图标 + 粉色胶囊 active
+
+原来的 nav 是「文字 + 底部 4px 蓝下划线」——太朴素，蓝色下划线跟整体粉色调也不搭。重做：
+
+- 每个页签前加 lucide-style 线性 SVG 图标（房子/铅笔/相框/调色板/链条/i）
+- 字号 1em → 1.15em，字重 600
+- 选中态：**粉色胶囊填充** + 粉字 + 轻微粉光晕（不再是底部下划线）
+- hover：浅粉胶囊填充
+
+页签顺序也微调：「首页 / 画板 / 博客 / 回忆 / 友链 / 关于」——画板紧跟首页（高频互动入口）。
+
+### 8. 自定义滚动条 #66CCFF
+
+水蓝 `#66CCFF` 胶囊滚动条。Firefox `scrollbar-color` + Webkit `::-webkit-scrollbar-thumb` 两套写。thumb 加 `border: 3px solid transparent` + `background-clip: content-box`——视觉上比轨道窄，留呼吸感不贴边。
+
+iOS Safari 不支持自定义 scrollbar（系统级），手机端依旧默认灰，这是平台限制不是 bug。
+
+### 9. 移动端 header 加厚 + 阅读浮条对齐
+
+对比 [xhblog.top](https://xhblog.top)，发现自己 header 在移动端比人家细——光按钮 padding 不够，必须给 header 设 `min-height: 68px` 兜底。
+
+同时把 TOC 浮条左右间距重新算（hamburger 加大后会挤过来）、浮条字号字重提高、文字左对齐紧贴进度环、SVG icon 换成跟主 hamburger 区分开的书签图标——免得用户误把 TOC 浮条当成第二个导航菜单。
+
+### 10. 大屏放宽 + Grid 防溢出
+
+之前所有页面都没有 ≥1400/≥1800 断点——4K 屏上两侧空白浪费。统一加：
+
+| 页面 | 默认 | ≥1400 | ≥1800 |
+|---|---|---|---|
+| 首页 main | 1080 | 1280 | 1440 |
+| 关于 main | 800 | 1000 | 1140 |
+| 友链 main | 960 | 1200 | 1360 |
+| 回忆 main | 1080 | 1280 | 1440 |
+| 画板 main | 1080 | 1400 | 1680 |
+| 博文 prose | 840 | 1000 | 1100 |
+
+但放宽 main 引出另一个 bug——**首页「最近写了点啥」3×2 布局会自动变 4 列**。grid 用的是 `auto-fit`，main 一宽就自动多塞列。修法：≥1400 时强制 `grid-template-columns: repeat(3, 1fr)` 锁死 3 列。
+
+更广泛的 grid 溢出问题（窄屏卡片撑出容器）用 **`minmax(min(Npx, 100%), 1fr)`** pattern 统一治：
+```css
+/* ❌ 窄屏父容器 < 280px 时卡片强撑 280 出框 */
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+/* ✅ 父容器窄时 min 退化为 100%，乖乖填满 */
+grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+```
+
+应用到了 6 处 grid（index `.post-cards`/`.now-grid`、friends、memories、about `.proj-grid`、sidebar、categories）。
+
+### 11. 禁用移动端 tap-highlight + 圆角 focus
+
+iOS Safari / Android Chrome 默认点击会闪一下蓝色方块（`-webkit-tap-highlight-color`），跟所有自定义粉色 active 反馈冲突。全局禁掉：
+```css
+html { -webkit-tap-highlight-color: transparent; }
+```
+
+ticker 里 `<a>` 的 focus 也加 `border-radius: 999px` + `:focus-visible` 用浅粉胶囊填充——避免浏览器默认方框 focus ring 在圆角胶囊里出戏。
+
 ## 踩过最坑的 12 件事
 
 1. **PowerShell 不让跑 npm**：Windows 默认禁脚本，`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` 解决
@@ -371,14 +510,23 @@ nav h2 a:hover {
 16. **emoji 图标在不同 OS 渲染不一致**：Windows / Mac / Chrome 各画一套——稳定的图标必须 SVG，邮箱链接信封 SVG / 搜索放大镜 SVG / 社交平台 SVG 全套
 17. **CSS 相同特异性按源序后写赢**：`h2 a:hover` 想覆盖 `nav a:hover` 不管用——必须显式 `nav h2 a:hover` 提高一档
 18. **6 = LCM(2, 3)**：首页最近文章用 6 篇而不是 3/4 篇，`auto-fit` 网格 2 列 / 3 列都能整齐填满
+19. **Grid `minmax(Npx, 1fr)` 在窄屏父容器 < N 时会撑出容器**：必须用 `minmax(min(Npx, 100%), 1fr)`——父容器够宽时正常断点行为，窄时 min 退化为 100% 不溢出
+20. **giscus iframe 内 `backdrop-filter` 无效**：iframe 独立渲染上下文看不到外层博客玻璃卡，blur 啥都没——只能极低 alpha + 细描边
+21. **giscus 主题 CSS 必须 cache-bust**：iframe 缓存 theme，改了 CSS 重部署还是旧版；URL 拼 `?v={build-time}` 解决
+22. **giscus `<li aria-current>` 是 active 标记不是 button**：BumpButton 把 aria-current 放在父 `<li>` 上，按 button 自身找选择器永远命不中
+23. **Astro scoped CSS 给 SVG 设 `width !important` 可能不生效**：DevTools Computed 面板显示已应用，实际渲染 `0 × N`；**必须用 inline `width="26"` HTML 属性**，CSS 不可靠
+24. **移动端 `-webkit-tap-highlight-color` 默认蓝方块破坏所有自定义 active**：必须全局 `html { -webkit-tap-highlight-color: transparent }`
+25. **iOS Safari 不支持自定义 scrollbar**：Chrome/Firefox/Edge 都能改，iOS 是系统级控制——不要为此调试浪费时间
 
 ## 未来想加的
 
 - 暗色模式
-- Giscus 评论（基于 GitHub Issues，零维护）
+- ~~Giscus 评论（基于 GitHub Issues，零维护）~~ ✅ 第六阶段完成（用了 Discussions 不是 Issues，自定义玻璃主题）
+- ~~文章页阅读进度条（顶部一条 0-100%）~~ ✅ 第六阶段移动 TOC 浮条左侧已加进度环
 - RSS 订阅按钮（feed 已经有了，缺入口）
 - 数学公式 / mermaid 图支持
-- 文章页阅读进度条（顶部一条 0-100%）
+- ~~画板~~ ✅ 第六阶段完成（不保存的随手画）
+- ~~回忆相册~~ ✅ 第六阶段完成（JSON 驱动卡片网格）
 
 代码全部开源：[github.com/WizardHeHeJun/WizardHeHeJun.github.io](https://github.com/WizardHeHeJun/WizardHeHeJun.github.io)
 
@@ -392,3 +540,4 @@ nav h2 a:hover {
 > - 2026-05-14 三版：第三阶段精修（首页 hero / 关于页重构 / 搜索 overlay / 背景独立层 + parallax）+ 踩坑扩到 8 条。**项目工作规范单独沉淀到了 [CLAUDE.md](https://github.com/WizardHeHeJun/WizardHeHeJun.github.io/blob/main/CLAUDE.md)**——未来 AI 协作直接读那个
 > - 2026-05-14 四版：**第四阶段「响应式 + 移动端 UX」**——统一四档断点 / `min()` 宽度策略 / `clamp()` 流式字号 / 博客列表横向交错卡片 / hover wiggle + active press 微动效 / ≤720 汉堡抽屉（可折叠二级 + 四种关闭路径）/ ≤640 nav 嵌入式胶囊 ticker（最近文章自动滚动）/ sidebar 三段行为。踩坑扩到 12 条（新增 4 条 CSS bug：box-sizing 溢出、flex align-items 居中破坏 ticker、translateY 百分比相对自身、置顶差异化）
 > - 2026-05-15 五版：**第五阶段「文章阅读体验」**——文章 TOC 目录（桌面左侧贴边 fixed 栏 + 移动浮入 header 替代 ticker + 右下角 FAB 折叠手柄）/ Header 自动隐藏（下滑藏/上滑现 + body class 联动）/ 鼠标拖尾换成菱形 + 三角几何混搭 / 统一图标按钮风格（4 处 40px 圆形玻璃按钮 + 邮箱链接）/ 搜索浮窗 flex 居中 + 大屏阶梯加宽 / 首页最近文章 3→6 篇（LCM(2,3) 整齐填充）/ 站名 hover 取消（特异性提升）。踩坑扩到 18 条（新增 6 条：inline script 时序、scroll 监听用 transform、DOM teleport 不如 CSS fixed、emoji 渲染分裂、CSS 特异性源序、6 篇数学最优）
+> - 2026-05-18 六版：**第六阶段「评论、互动、个人化」**——giscus 评论 + 表情反应（三页接入：博文/关于/友链）+ 自定义玻璃主题（带 `?v=` cache-bust）/ 回忆相册（JSON 驱动卡片网格）/ 画板（HTML5 Canvas + 主题化 confirm modal，不保存）/ 首页·关于·sidebar 三处头像 hover wiggle（global keyframes 复用）/ 移动 TOC 浮条加实时阅读进度环（SVG stroke-dashoffset）/ nav 重设计（SVG 图标 + 粉色胶囊 active 替代蓝色下划线）/ 自定义滚动条 `#66CCFF` / 移动 header 加厚到 68px / 大屏 ≥1400/≥1800 全站放宽 / Grid 防溢出 pattern 统一应用 / 移动端禁默认 tap-highlight 蓝方块。踩坑扩到 25 条（新增 7 条：grid minmax 溢出、giscus iframe blur 无效、giscus theme cache、giscus aria-current 在父级、Astro scoped CSS 给 SVG 失效、tap-highlight 必关、iOS scrollbar 平台限制）

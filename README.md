@@ -15,6 +15,7 @@
 - **GitHub Actions** —— 推送即自动部署
 - **Markdown / MDX** —— 写作格式
 - **[Pagefind](https://pagefind.app/)** —— 静态全文搜索
+- **[giscus](https://giscus.app/)** —— 基于 GitHub Discussions 的评论 + 表情反应（自定义玻璃主题）
 - **[APlayer](https://aplayer.js.org/) + [MetingJS](https://github.com/metowolf/MetingJS)** —— 音乐播放器
 - **[LXGW WenKai Screen](https://github.com/lxgw/LxgwWenKai-Screen)** —— 手写感中文字体（jsDelivr CDN）
 
@@ -24,7 +25,9 @@
 my-blog/
 ├── public/                          # 静态资源（直接拷到根路径）
 │   ├── favicon-{16,32,192}.png      # 多尺寸浏览器图标
-│   └── apple-touch-icon.png         # iOS 主屏图标
+│   ├── apple-touch-icon.png         # iOS 主屏图标
+│   ├── giscus-theme.css             # giscus 自定义玻璃主题（生产环境用，dev 回退 light）
+│   └── memories/                    # 回忆相册图片目录（拖图进去即可）
 ├── src/
 │   ├── assets/                      # 项目源资源（Vite 打包，自动加 hash）
 │   │   ├── elysia.png               # favicon 源图
@@ -34,17 +37,18 @@ my-blog/
 │   │   └── blog-placeholder-*.jpg   # 模板自带占位图
 │   ├── components/                  # 可复用组件
 │   │   ├── BaseHead.astro           # <head> 通用元数据 + LXGW 字体 CDN
-│   │   ├── Header.astro             # 顶部导航 + 移动端 ☰ 抽屉 + 最近文章 ticker（≤640 嵌入 nav 的胶囊滚动）
+│   │   ├── Header.astro             # 顶部导航（带 SVG 图标 + 粉色胶囊 active）+ 移动端 ☰ 抽屉 + 最近文章 ticker（≤640 嵌入 nav 的胶囊滚动）
 │   │   ├── Footer.astro             # 全宽底部条 + 挂载所有全局组件
 │   │   ├── HeaderLink.astro         # 导航链接组件
 │   │   ├── FormattedDate.astro      # 中文日期格式化
-│   │   ├── Sidebar.astro            # 博客列表的左侧栏（Profile/Stats/最近文章）
+│   │   ├── Comments.astro           # giscus 评论组件（mapping/term props，dev 回退 light，生产用自定义主题 + cache buster）
+│   │   ├── Sidebar.astro            # 博客列表的左侧栏（Profile/Stats/最近文章，头像带 hover wiggle）
 │   │   ├── Pagination.astro         # 分页器（数字 + 上下页）
 │   │   ├── BgLayer.astro            # 独立背景层（绕开 backdrop-filter 冻结 bug）
 │   │   ├── BgScrollSync.astro       # JS 把 scroll 进度同步到 --bg-y CSS 变量
 │   │   ├── CursorTrail.astro        # 鼠标拖尾（菱形 + 三角混搭，节流 45fps，跳过触屏）
 │   │   ├── SearchOverlay.astro      # 搜索浮窗（Pagefind JS API + 自定义 UI，flex 居中）
-│   │   ├── TableOfContents.astro    # 文章 TOC（DOM 扫描 h2/h3 + 桌面左侧栏 + 移动浮 header + FAB）
+│   │   ├── TableOfContents.astro    # 文章 TOC（DOM 扫描 h2/h3 + 桌面左侧栏 + 移动浮 header + 阅读进度环 + FAB）
 │   │   └── MusicPlayer.astro        # APlayer + MetingJS 右下角音乐播放器
 │   ├── content/
 │   │   └── blog/                    # ⭐ 写新文章的地方（.md / .mdx）
@@ -52,15 +56,17 @@ my-blog/
 │   ├── layouts/
 │   │   └── BlogPost.astro           # 文章页布局（hero 图 + 玻璃 prose 卡）
 │   ├── pages/                       # 路由页面
-│   │   ├── index.astro              # 首页（hero 打字机 + 最近文章 + Now 区）
-│   │   ├── about.astro              # 关于页（6 sections 玻璃卡）
+│   │   ├── index.astro              # 首页（hero 打字机 + 头像 wiggle + 最近文章 3×2 + Now 区）
+│   │   ├── about.astro              # 关于页（6 sections 玻璃卡 + giscus 评论）
 │   │   ├── 404.astro                # 戏剧版 404（4 [Elysia] 4 + 浮动动画）
-│   │   ├── friends.astro            # 友链页（数据来自 src/data/friends.json）
+│   │   ├── friends.astro            # 友链页（数据来自 src/data/friends.json + giscus 评论申请入口）
+│   │   ├── memories.astro           # 🆕 回忆相册（按日期倒序卡片网格，图片放 public/memories/）
+│   │   ├── whiteboard.astro         # 🆕 画板（HTML5 canvas + 颜色/粗细/橡皮/清空 + 主题化 confirm modal）
 │   │   ├── search.astro             # 搜索页（fallback，主入口已改 overlay）
 │   │   ├── rss.xml.js               # RSS 订阅
 │   │   ├── blog/
 │   │   │   ├── [...page].astro      # 博客列表（分页 + sidebar）
-│   │   │   └── [...slug].astro      # 单篇文章动态路由
+│   │   │   └── [...slug].astro      # 单篇文章动态路由（含 giscus 评论）
 │   │   ├── categories/
 │   │   │   ├── index.astro          # 分类总览
 │   │   │   └── [category].astro     # 单分类下的文章列表
@@ -68,7 +74,8 @@ my-blog/
 │   │       ├── index.astro          # 标签云
 │   │       └── [tag].astro          # 单标签下的文章列表
 │   ├── data/
-│   │   └── friends.json             # 友链数据
+│   │   ├── friends.json             # 友链数据
+│   │   └── memories.json            # 🆕 回忆相册数据（[{ image, date, title, description? }]）
 │   ├── styles/
 │   │   └── global.css               # 全局样式（玻璃变量 + 字体 + 渐变 fallback）
 │   ├── utils/
@@ -87,21 +94,26 @@ my-blog/
 
 - 🌊 **毛玻璃风** —— 半透明白卡片 + `backdrop-filter: blur(18px) saturate(180%)`
 - 🖼️ **滑块式视差背景** —— 独立 `bg-layer` div + JS 同步 scroll 进度，页头看图顶 / 页尾看图底
-- 📐 **响应式四档断点** —— 移动 ≤640 / 平板 641-960 / 桌面 961-1280 / 大屏 >1400（再宽到 1800 解锁博文列表 1680px）
+- 📐 **响应式四档断点** —— 移动 ≤640 / 平板 641-960 / 桌面 961-1280 / 大屏 >1400（再宽到 1800 解锁博文列表 1680px / 画板 1680px）
 - 🍔 **移动端 ☰ 抽屉** —— ≤720 折叠汉堡菜单，含可展开二级（博客 → 分类/标签）+ 社交快捷（已删冗余 ×，留 4 种关闭路径）
 - 📰 **嵌入式 ticker** —— ≤640 nav 里挂胶囊状的最近文章自动滚动条（脉动小圆点 + 5s/项 + 无缝循环）
-- 📑 **文章 TOC 目录** —— 桌面 ≥1280 左侧贴边固定栏，含粉色「文章目录」胶囊 + 编号 + 主动态高亮 + 底部跳转按钮 + 渐变遮罩；移动端浮入 header 替代 ticker；窄屏右下角 FAB（回到顶部 / 滚到底部 / 折叠手柄）
-- 🎯 **Header 自动隐藏** —— 下滑藏 / 上滑现 / 贴顶 80px 内永远显示，body class 联动 TOC 等组件
+- 📑 **文章 TOC 目录** —— 桌面 ≥1280 左侧贴边固定栏，含粉色「文章目录」胶囊 + 编号 + 主动态高亮 + 底部跳转按钮 + 渐变遮罩；移动端浮入 header（带**实时阅读进度环**）；窄屏右下角 FAB（回到顶部 / 滚到底部 / 折叠手柄）
+- 🎯 **Header 自动隐藏** —— 下滑藏 / 上滑现 / 贴顶 80px 内永远显示，body class 联动 TOC 等组件；移动端 header 加厚到 68px
 - 🃏 **横向交错卡片** —— 博文列表单列横向，奇偶图左/图右交错；置顶用 21:9 全宽大图差异化
 - 🎯 **卡片微动效** —— hover 配图一次性 wiggle + 卡片上抬 + "阅读全文 →" 滑入；active 0.985 下沉反馈
+- 💞 **头像 hover wiggle** —— 首页/关于/sidebar 三处头像鼠标悬停时一次性 0.6s 摆动（global keyframes 复用）
+- 💬 **giscus 评论 + 表情反应** —— 基于 GitHub Discussions，自定义玻璃水色主题，三处接入（博文/关于/友链），每次 build 自动 cache-bust
 - 🔤 **霞鹜文楷** —— LXGW WenKai Screen via jsDelivr CDN，按字符 chunk 拆分
-- 🇨🇳 **中文友好** —— `lang="zh-CN"`、中文日期、中文字数 + 阅读时长、正文宽度 ≤ 960px（阅读上限）
+- 🇨🇳 **中文友好** —— `lang="zh-CN"`、中文日期、中文字数 + 阅读时长、正文宽度 ≤ 1100px（≥1800 大屏放宽）
 - 🔍 **Pagefind 搜索** —— 静态全文索引，浮窗 flex 居中（大屏阶梯加宽 560/640/740px），按 `/` 全局打开
 - 🎵 **音乐播放器** —— APlayer + MetingJS，固定右下角，可换网易云任意歌单
 - ✨ **鼠标拖尾** —— 空心几何菱形 + 三角形 3:1 混搭（粉/蓝/紫三色 + 描边 + 发光），自动跳过触屏 + 减少动画偏好
+- 📜 **自定义滚动条** —— 水蓝 `#66CCFF` 胶囊滑块（Firefox `scrollbar-color` + Webkit `::-webkit-scrollbar-thumb`）
+- 📷 **回忆相册** —— JSON 数据驱动的卡片网格，按日期倒序，图片放 `public/memories/`
+- 🎨 **画板** —— HTML5 Canvas 自由绘画，6 色板 + 自定义颜色 + 粗细滑块 + 橡皮 + 清空（主题化 confirm modal，不保存）
 - 📌 **置顶机制** —— frontmatter `featured: true`，列表暖色金边大卡
 - 🏷️ **分类 + 标签** —— 5 个枚举分类 + 自由标签，自动生成聚合页
-- 🔗 **社交** —— GitHub / 哔哩哔哩 / X / 邮箱，统一 40px 圆形玻璃按钮（默认灰、hover 染主题色）
+- 🔗 **社交** —— GitHub / 哔哩哔哩 / X / 邮箱，统一 48px 圆形玻璃按钮（深灰图标 + 粉色 hover 渐变）
 
 ## 写新文章
 
@@ -169,17 +181,23 @@ git push
 | 想改什么 | 改哪里 |
 |---------|-------|
 | 站点标题/描述 | `src/consts.ts` |
+| **giscus 仓库 / 分类 / ID** | `src/consts.ts` 的 `GISCUS` 常量（4 个 ID 从 https://giscus.app 配置器拿） |
+| **giscus 主题配色** | `public/giscus-theme.css`（透明度、按钮渐变、tab 配色都在里面） |
 | 顶部导航/社交链接 | `src/components/Header.astro` + `src/components/Footer.astro` |
 | 玻璃透明度/边框/阴影 | `src/styles/global.css` 的 `:root` 里 `--glass-*` 变量 |
+| **滚动条颜色** | `src/styles/global.css` 里搜 `#66CCFF` |
+| **头像 wiggle 强度** | `src/styles/global.css` 的 `@keyframes avatar-wiggle`（旋转角度 / scale） |
 | 全屏背景图 | 替换 `src/assets/bg.jpg` 即可 |
 | favicon | 替换 `src/assets/elysia.png`，跑 `node scripts/gen-favicon.mjs` |
 | 音乐歌单 | `src/components/MusicPlayer.astro` 第 4 行的 `playlistId`（网易云歌单 ID） |
 | 友链 | `src/data/friends.json` |
+| **回忆相册** | `src/data/memories.json` + 图片丢 `public/memories/`（JSON 里引用 `/memories/<文件名>`） |
+| **画板色板/工具** | `src/pages/whiteboard.astro` 顶部的 `.swatches` HTML 块（6 色） |
 | 首页 Now 区内容 | `src/pages/index.astro` 的 `.now-grid` 块 |
 | 关于页技术栈/项目 | `src/pages/about.astro` 顶部的 `featured` 和 `stack` 数组 |
 | 首页打字机短句 | `src/pages/index.astro` 的 `typeLines` 数组 |
 | 鼠标拖尾颜色/速度/形状 | `src/components/CursorTrail.astro`（colors 数组 + MAX/LIFE/throttle 常量） |
-| TOC 主动态色 | `src/components/TableOfContents.astro` 里搜 `#c2185b` |
+| TOC 阅读进度环色 | `src/components/TableOfContents.astro` 里搜 `#ff5d8f`（粉色） |
 | Header 自动隐藏阈值 | `src/components/Header.astro` 里 `TOP_LOCK`（贴顶锁定区）+ `THRESH`（抖动阈值） |
 
 ## 项目惯例（重要！别再踩这些坑）
@@ -201,6 +219,10 @@ git push
 13. **跨组件协调用 body class**——`body.has-toc`、`body.header-hidden`、`body.drawer-open` 等，让 CSS 选择器单点联动多个组件，避免 prop drilling
 14. **CSS 特异性陷阱**：相同特异性按源序后写赢——想覆盖必须显式提高一档（如 `nav h2 a:hover` 胜过 `nav a:hover`）
 15. **数学最优解：6 = LCM(2, 3)**——首页最近文章展示 6 篇，2 列 / 3 列 grid 都能整齐填满，无孤儿尾巴
+16. **Grid 防溢出 pattern：`minmax(min(Npx, 100%), 1fr)`**——别直接 `minmax(280px, 1fr)`，窄屏父容器 < 280px 时卡片会撑出右边界
+17. **SVG 必须 inline `width`/`height` 属性**——Astro scoped CSS 加 `!important` 都不一定可靠，HTML 属性最稳
+18. **giscus 自定义主题 URL 必须带 cache buster `?v=`**——iframe 会缓存 theme CSS，改了不刷新；构建时间戳追加到 URL 解决
+19. **移动端必须 `-webkit-tap-highlight-color: transparent`**——iOS/Android 默认点击蓝方块会破坏自定义 active 反馈
 
 ## License
 
