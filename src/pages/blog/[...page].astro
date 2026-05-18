@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import HeroImage from '../../components/HeroImage.astro';
 import { getCollection } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
 import BaseHead from '../../components/BaseHead.astro';
@@ -111,11 +111,7 @@ const postsWithStats = page.data.map((p) => ({
 				aspect-ratio: 16 / 10;
 				background: rgba(0, 0, 0, 0.04);
 			}
-			.card-media img {
-				display: block;
-				width: 100%;
-				height: 100%;
-				object-fit: cover;
+			:global(.card-media img) {
 				transition: transform 0.3s ease;
 			}
 			.card-media-placeholder {
@@ -197,7 +193,7 @@ const postsWithStats = page.data.map((p) => ({
 			.post-card a:hover .title {
 				color: var(--accent);
 			}
-			.post-card a:hover .card-media img {
+			:global(.post-card a:hover .card-media img) {
 				animation: card-wiggle 0.5s ease;
 			}
 			.post-card a:hover .more {
@@ -299,10 +295,10 @@ const postsWithStats = page.data.map((p) => ({
 				.post-card a {
 					transition: none;
 				}
-				.post-card a:hover .card-media img {
+				:global(.post-card a:hover .card-media img) {
 					animation: none;
 				}
-				.card-media img {
+				:global(.card-media img) {
 					transition: none;
 				}
 			}
@@ -320,7 +316,7 @@ const postsWithStats = page.data.map((p) => ({
 								<a href={`/blog/${post.id}/`}>
 									<div class="card-media">
 										{post.data.heroImage ? (
-											<Image width={640} height={400} src={post.data.heroImage} alt="" />
+											<HeroImage slug={post.id} src={post.data.heroImage} width={640} height={400} />
 										) : (
 											<div class="card-media-placeholder">✨</div>
 										)}

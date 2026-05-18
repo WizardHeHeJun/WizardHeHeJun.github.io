@@ -589,6 +589,31 @@ arc.style.strokeDashoffset = String(C * (1 - progress));
 
 cubic-bezier 第 4 个参数 1.4 给出末段 overshoot——bounce 感比线性 ease 更可爱。
 
+### 38. Page-scoped CSS 不下钻子组件渲染的元素（重灾区）
+
+Astro 6 的 page scoped CSS 编译时给选择器尾部加 `[data-astro-cid-XXX]`：`.card-media img` → `.card-media img[data-astro-cid-A]`。但子组件里的 img 只带**子组件**的 cid，page 的 scoped 规则匹配失败——视觉上像 CSS 完全没生效，但 DevTools 里规则仍存在。
+
+**同一根因已踩两次**：引入 HeroImage 组件接管 hero 图渲染后——
+- `.card-media img { width:100%; height:100%; object-fit:cover }` 失效 → img 用 natural 640px 左对齐，右侧露出 LQIP 背景（置顶卡 21:9 容器最明显）
+- `.post-card a:hover .card-media img { animation: card-wiggle }` 失效 → hover wiggle 没了
+- `.post-list img { width:150px; height:80px }` 失效 → 分类/标签页缩略图沿用 natural 300×150 溢出 flex 布局
+
+**三种修法**（按推荐度）：
+
+1. **`:global()` 包后代选择器**（最局部，改动最小）：
+   ```css
+   :global(.card-media img) { transition: transform 0.3s ease; }
+   :global(.post-card a:hover .card-media img) { animation: card-wiggle 0.5s ease; }
+   ```
+   注意 `:global()` 完全跳出 scope；确认本项目只有一处用该 class，避免误伤。
+
+2. **样式搬进子组件 `<style is:global>`**（适合通用 baseline）：
+   「所有用 HeroImage 的地方都该 cover」这类规则写在 HeroImage.astro 内部全局块，组件自己兜底，page 不用关心。
+
+3. **prop + class 透传**：HeroImage 接 `class` prop 传给 wrap，page 用自己的 scoped class 控制——最灵活但最啰嗦。
+
+**自检触发条件**：每次让子组件渲染原本由 page-scoped CSS 控制的元素（img / svg / a / button），先问自己「这些 scoped 规则匹配得到子组件渲染出来的元素吗？」答案是「不能」就立刻改 `:global()` 或把规则搬进子组件。
+
 ## 写新博文
 
 ```bash

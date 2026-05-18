@@ -17,6 +17,6 @@ const { Content } = await render(post);
 const { wordCount, readingTime } = calcReadingStats(post.body ?? '');
 ---
 
-<BlogPost {...post.data} wordCount={wordCount} readingTime={readingTime}>
+<BlogPost {...post.data} slug={post.id} wordCount={wordCount} readingTime={readingTime}>
 	<Content />
 </BlogPost>

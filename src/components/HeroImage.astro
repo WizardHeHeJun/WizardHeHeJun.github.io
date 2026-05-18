@@ -1,0 +1,78 @@
+---
+import { Image } from 'astro:assets';
+import lqipMap from '../data/lqip.json';
+
+interface Props {
+	src: any;
+	slug: string;
+	width: number;
+	height: number;
+	alt?: string;
+	loading?: 'lazy' | 'eager';
+}
+
+const { src, slug, width, height, alt = '', loading = 'lazy' } = Astro.props;
+const entry = (lqipMap as Record<string, { lqip: string; color: string }>)[slug];
+const wrapStyle = entry
+	? `background-image: url('${entry.lqip}'); background-color: ${entry.color};`
+	: '';
+---
+
+<div class={`hero-wrap${entry ? '' : ' no-lqip'}`} style={wrapStyle}>
+	<Image src={src} width={width} height={height} alt={alt} loading={loading} decoding="async" />
+</div>
+
+<style is:global>
+	.hero-wrap {
+		display: block;
+		position: relative;
+		overflow: hidden;
+		border-radius: inherit;
+		background-size: cover;
+		background-position: center;
+		background-color: rgba(0, 0, 0, 0.04);
+	}
+	.hero-wrap > img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		opacity: 0;
+		transition: opacity 0.4s ease-out;
+	}
+	.hero-wrap[data-loaded='1'] > img,
+	.hero-wrap.no-lqip > img {
+		opacity: 1;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.hero-wrap > img {
+			transition: none;
+		}
+	}
+</style>
+
+<script is:inline>
+	(function () {
+		function mark(wrap) {
+			wrap.dataset.loaded = '1';
+		}
+		function init() {
+			document.querySelectorAll('.hero-wrap').forEach((wrap) => {
+				if (wrap.classList.contains('no-lqip')) return;
+				const img = wrap.querySelector(':scope > img');
+				if (!img) return;
+				if (img.complete && img.naturalWidth > 0) {
+					mark(wrap);
+				} else {
+					img.addEventListener('load', () => mark(wrap), { once: true });
+					img.addEventListener('error', () => mark(wrap), { once: true });
+				}
+			});
+		}
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', init);
+		} else {
+			init();
+		}
+	})();
+</script>

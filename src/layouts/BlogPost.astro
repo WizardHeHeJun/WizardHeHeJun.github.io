@@ -1,16 +1,21 @@
 ---
-import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Comments from '../components/Comments.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import HeroImage from '../components/HeroImage.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 
-type Props = CollectionEntry<'blog'>['data'] & { wordCount?: number; readingTime?: number };
+type Props = CollectionEntry<'blog'>['data'] & {
+	slug?: string;
+	wordCount?: number;
+	readingTime?: number;
+};
 
 const {
+	slug,
 	title,
 	description,
 	pubDate,
@@ -42,12 +47,14 @@ const {
 			.hero-image {
 				width: min(1100px, 100% - 2em);
 				margin: 0 auto 1em;
+				aspect-ratio: 1020 / 510;
+				border-radius: 16px;
+				overflow: hidden;
+				box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
 			}
 			.hero-image img {
 				display: block;
 				margin: 0 auto;
-				border-radius: 16px;
-				box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
 			}
 			.prose {
 				width: min(840px, 100% - 2em);
@@ -156,7 +163,9 @@ const {
 		<main>
 			<article>
 				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
+					{heroImage && slug && (
+						<HeroImage slug={slug} src={heroImage} width={1020} height={510} loading="eager" />
+					)}
 				</div>
 				<TableOfContents />
 				<div class="prose" data-pagefind-body>
