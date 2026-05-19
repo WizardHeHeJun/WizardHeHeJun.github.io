@@ -218,12 +218,13 @@ pre > code {
 .prose pre.astro-code::after {
 	content: attr(data-language);
 	position: absolute;
-	top: 10px;
-	left: 70px;
-	font-size: 0.78em;
-	color: #6c757d;
+	top: 8px;
+	left: 76px;
+	font-size: 0.88em;
+	font-weight: 500;
+	color: #4a5568;
 	text-transform: uppercase;
-	letter-spacing: 0.06em;
+	letter-spacing: 0.08em;
 	font-family: 'LXGW WenKai Screen', sans-serif;
 }
 .prose pre.astro-code[data-language="plaintext"]::after,
@@ -234,23 +235,23 @@ pre > code {
 /* —— 代码块右上角动作按钮：放大 + 复制（JS 在 BlogPost.astro 末尾注入） —— */
 .prose pre.astro-code .code-actions {
 	position: absolute;
-	top: 7px;
+	top: 6px;
 	right: 8px;
 	display: flex;
-	gap: 4px;
+	gap: 6px;
 	z-index: 2;
 }
 .prose pre.astro-code .code-action-btn {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 22px;
-	height: 22px;
+	width: 26px;
+	height: 26px;
 	padding: 0;
-	background: rgba(0, 0, 0, 0.04);
+	background: transparent;
 	border: none;
-	border-radius: 4px;
-	color: #6c757d;
+	border-radius: 5px;
+	color: #4a5568;
 	cursor: pointer;
 	transition:
 		background 0.15s ease,
