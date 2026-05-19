@@ -648,6 +648,32 @@ export default defineConfig({
 
 如果某天真要用 antv：clone 源码自己 build，绕开 npm 分发版的 install hook。
 
+### 41. ```mermaid 代码块画图（客户端 lazy load）
+
+博文里写 ```` ```mermaid ```` fenced code block 即可——build 时 [plugins/remark-mermaid.mjs](plugins/remark-mermaid.mjs) 把它包成 `<pre class="mermaid">`，[BlogPost.astro](src/layouts/BlogPost.astro) 末尾的 inline script 在**有 mermaid 块的页面**才 dynamic import `mermaid`（~600KB core + 按需 chunk）并 init。
+
+````markdown
+```mermaid
+graph TD
+  A[开始] --> B{条件?}
+  B -->|是| C[执行]
+  B -->|否| D[跳过]
+```
+````
+
+**关键约定**：
+
+1. **lang 必须是 `mermaid`**——跟 GitHub / VitePress / Obsidian 同款，迁移友好
+2. **客户端渲染**——`mermaid.run({ querySelector: '.prose .mermaid' })` 在 DOM ready 后跑；不含 mermaid 块的页面**零负担**
+3. **玻璃主题已注入**——`mermaid.initialize` 里 `themeVariables` 设了 `primaryColor #dde7ff` / `primaryBorderColor #2337ff` / `lineColor #66ccff` / `secondaryColor #ffd1e4`，跟站点 `--accent` 系列对齐
+4. **支持的图类**：flowchart / sequenceDiagram / classDiagram / stateDiagram / pie / mindmap / quadrantChart / sankey / gitgraph / erDiagram 等 ~20 种
+5. **CSS 容器**：`.mermaid-figure` 在 `global.css`，玻璃卡 + 边距 + 移动响应式
+
+**Bundle 体积参考**（Astro chunk split）：
+- mermaid.core: ~607KB（必装）
+- 按使用的 diagram 类型按需载（如 architectureDiagram 149KB / cytoscape 442KB / wardley 612KB）
+- 不用 mermaid 的页面 0KB JS 增量
+
 ## 写新博文
 
 ```powershell
@@ -758,6 +784,7 @@ npm run refresh-og --force  # 全量重抓
 | `scripts/gen-lqip.mjs` | 扫 `src/assets/blog/*.jpg` 生成 LQIP base64 + dominant 色（prebuild 自动跑） |
 | `scripts/new-post.mjs` | 交互式新建博文 CLI（npm run new） |
 | `scripts/refresh-og.mjs` | 抓 friends.json URL 的 OG meta 到 og-cache.json（手动跑 npm run refresh-og） |
+| `plugins/remark-mermaid.mjs` | ```mermaid 代码块包成 `<pre class="mermaid">`（客户端渲染，详见 §41） |
 | `public/favicon-*.png` | 生成的 favicon 输出 |
 | `public/giscus-theme.css` | **giscus 自定义主题**（透明面板 + 玻璃输入框 + 粉色按钮 + sort tabs 胶囊）|
 | `public/memories/` | 回忆图片目录（直接拖图进去，JSON 里引用 `/memories/<文件名>`）|

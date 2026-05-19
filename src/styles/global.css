@@ -331,6 +331,42 @@ hr {
 	}
 }
 
+/* ============================================================
+   Mermaid 图表（客户端 lazy load 渲染，见 BlogPost.astro 末尾脚本）
+   ============================================================ */
+.prose .mermaid-figure {
+	margin: 1.8em auto;
+	padding: 1.4em 1.6em;
+	background: var(--glass-bg);
+	backdrop-filter: var(--glass-blur);
+	-webkit-backdrop-filter: var(--glass-blur);
+	border: var(--glass-border);
+	border-radius: 18px;
+	box-shadow: var(--glass-shadow);
+	overflow: hidden;
+}
+.prose .mermaid-figure .mermaid {
+	background: transparent;
+	text-align: center;
+	margin: 0;
+	font-family: 'LXGW WenKai Screen', 'PingFang SC', sans-serif;
+	color: rgb(var(--gray-dark));
+}
+/* mermaid.js 渲染后 SVG 自适应宽度 */
+.prose .mermaid-figure svg {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	margin: 0 auto;
+}
+@media (max-width: 640px) {
+	.prose .mermaid-figure {
+		padding: 1em;
+		border-radius: 14px;
+		margin: 1.4em -0.4em;
+	}
+}
+
 .sr-only {
 	border: 0;
 	padding: 0;

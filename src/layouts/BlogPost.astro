@@ -211,7 +211,7 @@ const {
 
 		<script is:inline>
 			(function () {
-				function init() {
+				function initSpoilers() {
 					document.querySelectorAll('.prose .spoiler').forEach((el) => {
 						el.addEventListener('click', () => el.classList.add('revealed'));
 						el.addEventListener('keydown', (e) => {
@@ -223,11 +223,35 @@ const {
 					});
 				}
 				if (document.readyState === 'loading') {
-					document.addEventListener('DOMContentLoaded', init);
+					document.addEventListener('DOMContentLoaded', initSpoilers);
 				} else {
-					init();
+					initSpoilers();
 				}
 			})();
+		</script>
+
+		<script>
+			// Mermaid lazy load —— 仅当本文有 .mermaid 块时才载 mermaid.js（~700KB）
+			if (document.querySelector('.prose .mermaid')) {
+				import('mermaid').then(({ default: mermaid }) => {
+					mermaid.initialize({
+						startOnLoad: false,
+						theme: 'base',
+						themeVariables: {
+							fontFamily: "'LXGW WenKai Screen', 'PingFang SC', sans-serif",
+							primaryColor: '#dde7ff',
+							primaryTextColor: '#222939',
+							primaryBorderColor: '#2337ff',
+							lineColor: '#66ccff',
+							secondaryColor: '#ffd1e4',
+							tertiaryColor: '#f0f6ff',
+							noteBkgColor: '#fff7e6',
+							noteBorderColor: '#b8860b',
+						},
+					});
+					mermaid.run({ querySelector: '.prose .mermaid' });
+				});
+			}
 		</script>
 	</body>
 </html>
