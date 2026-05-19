@@ -396,8 +396,12 @@ const { prevPost = null, nextPost = null } = Astro.props;
 		letter-spacing: 0.04em;
 	}
 	.toc-desktop .toc-list-wrap {
-		flex: 1;
+		/* 不用 flex: 1（会吃完剩余空间让 margin-top: auto 无效）；
+		   按内容自然高度，超过 max-height 才滚动 —— 这样 prev-next 的
+		   margin-top: auto 才有空间把它推到 desktop 底 */
+		flex: 0 1 auto;
 		min-height: 0;
+		max-height: 55vh;
 		overflow-y: auto;
 		margin-right: -0.4em;
 		padding-right: 0.4em;
