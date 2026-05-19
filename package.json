@@ -15,6 +15,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@antv/infographic": "^0.3.19",
     "@astrojs/mdx": "^5.0.5",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
