@@ -269,7 +269,7 @@ flowchart LR
     C --> F[发出去]
 ```
 
-完整图类示例（流程图 / 时序图 / 状态图 / 类图 / 甘特图 / 饼图 / 思维导图 / ER 图 / Git 图 / 四象限图）见 [Mermaid 画图实例](/blog/mermaid-demo/)。
+支持的图类有 ~20 种（flowchart / sequenceDiagram / classDiagram / stateDiagram / erDiagram / gantt / pie / mindmap / quadrantChart / gitGraph 等），完整语法见 [Mermaid 官方文档](https://mermaid.js.org/intro/)。
 
 ## 十三、分隔线
 
