@@ -218,19 +218,21 @@ hr {
 	border-radius: 8px;
 	background: var(--callout-bg, rgba(35, 55, 255, 0.06));
 	position: relative;
+	overflow-wrap: anywhere;
+}
+.prose .callout code {
+	overflow-wrap: anywhere;
+	word-break: break-word;
 }
 .prose .callout::before {
 	content: var(--callout-icon, '');
-	display: inline-block;
-	margin-right: 0.4em;
+	display: block;
+	margin-bottom: 0.4em;
 	font-weight: 700;
 	color: var(--callout-color, var(--accent));
 }
 .prose .callout > :first-child {
-	display: inline;
-}
-.prose .callout > :nth-child(n + 2) {
-	margin-top: 0.6em;
+	margin-top: 0;
 }
 .prose .callout > :last-child {
 	margin-bottom: 0;
