@@ -772,8 +772,10 @@ const { prevPost = null, nextPost = null } = Astro.props;
 		}
 	}
 
-	/* ━━━ ≤640 视口：TOC bar 通过 fixed 浮到 header 位置占替代 ticker ━━━ */
-	@media (max-width: 640px) {
+	/* ━━━ ≤720 视口：TOC bar 通过 fixed 浮到 header 位置占替代 ticker ━━━
+	   原本只 ≤640 走这套；后来把整个 hamburger 范围（≤720）统一为一套布局，
+	   所以 TOC 胶囊的 fixed 浮层规则也跟着扩展到 ≤720 */
+	@media (max-width: 720px) {
 		/* 隐藏原 ticker（最近文章），让 TOC bar 占位 */
 		body.has-toc header .ticker {
 			display: none !important;

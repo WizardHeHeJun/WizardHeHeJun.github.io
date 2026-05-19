@@ -473,10 +473,16 @@ const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 			display: none;
 		}
 	}
-	/* —— 手机：藏掉社交图标 + 给 header 一个最低高度撑出厚实感 —— */
+	/* —— 移动端（≤720）：hamburger + h2 居中 + 紧凑 padding + 大搜索按钮
+	   合并了原 ≤480 的紧凑规则——三档统一一套布局，避免响应式抖动
+	   TOC 胶囊 reveal 后会 fixed 浮在 header 中部，那时 h2 淡出让位 */
+	h2 {
+		transition: opacity 0.28s ease;
+	}
 	@media (max-width: 720px) {
 		header {
 			min-height: 68px;
+			padding: 0 0.4em;
 		}
 		.social-links {
 			display: none;
@@ -496,44 +502,25 @@ const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 		h2 {
 			text-align: center;
 			flex: 1;
+			/* 缩小一档 + 省略号，长站名不会挤压两侧按钮 */
+			font-size: 0.92em;
+			min-width: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 		.internal-links {
 			display: flex;
 		}
 		.search-trigger {
-			padding: 1.1em 0.7em;
+			padding: 1.25em 0.7em;
+			font-size: 1em;
 		}
 		.search-trigger svg {
 			width: 28px;
 			height: 28px;
 			stroke-width: 2.2;
 		}
-	}
-	/* —— 超窄屏：紧凑 padding，但站名保留（让 header 中部不空） ——
-	   TOC 胶囊真正 reveal 后会 fixed 浮在 header 中部，那时 h2 让位淡出
-	   （见下面的 body.has-toc 规则） */
-	@media (max-width: 480px) {
-		header {
-			padding: 0 0.4em;
-		}
-		h2 {
-			/* 缩小一档保证窄屏不挤压 hamburger / 搜索按钮 */
-			font-size: 0.92em;
-			min-width: 0;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-		.search-trigger {
-			padding: 1.25em 0.7em;
-			font-size: 1em;
-		}
-	}
-	/* ≤640：TOC 胶囊 fixed 浮在 header 中部位置 → 与 h2 站名视觉冲突，
-	   reveal 后让 h2 淡出（不撤 flex 占位，保持 hamburger / 搜索的左右对齐） */
-	h2 {
-		transition: opacity 0.28s ease;
-	}
-	@media (max-width: 640px) {
+		/* TOC 胶囊 reveal 时让 h2 淡出（视觉位置冲突） */
 		body.toc-revealed h2 {
 			opacity: 0;
 			pointer-events: none;
