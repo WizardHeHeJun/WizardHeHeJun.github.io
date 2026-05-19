@@ -270,7 +270,8 @@ const { prevPost = null, nextPost = null } = Astro.props;
 		let curSig = '';
 		const updateTocTop = () => {
 			if (!hero || !desktop) return;
-			const stickyTop = document.body.classList.contains('header-hidden') ? 20 : 80;
+			// header 隐藏时让 TOC 真的贴 viewport 顶（8px 余量），现身时给 header 让位（80px）
+			const stickyTop = document.body.classList.contains('header-hidden') ? 8 : 80;
 			const heroRect = hero.getBoundingClientRect();
 			const top = Math.max(stickyTop, Math.round(heroRect.bottom + 20));
 			const vh = window.innerHeight;
