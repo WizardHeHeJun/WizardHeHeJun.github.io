@@ -258,5 +258,91 @@ const {
 				});
 			}
 		</script>
+
+		<script is:inline>
+			// 给每个 shiki 代码块顶部右侧注入「放大」「复制」按钮
+			(function () {
+				const FULLSCREEN_SVG =
+					'<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 2 2 6 2"></polyline><polyline points="14 6 14 2 10 2"></polyline><polyline points="14 10 14 14 10 14"></polyline><polyline points="2 10 2 14 6 14"></polyline></svg>';
+				const EXIT_SVG =
+					'<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 2 6 6 2 6"></polyline><polyline points="10 2 10 6 14 6"></polyline><polyline points="10 14 10 10 14 10"></polyline><polyline points="6 14 6 10 2 10"></polyline></svg>';
+				const COPY_SVG =
+					'<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="9" height="11" rx="1.5"></rect><path d="M3 5 H2 V14 H10 V13"></path></svg>';
+				const CHECK_SVG =
+					'<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 8 7 12 13 4"></polyline></svg>';
+
+				function init() {
+					document.querySelectorAll('.prose pre.astro-code').forEach((pre) => {
+						if (pre.dataset.actionsInjected) return;
+						pre.dataset.actionsInjected = '1';
+
+						const actions = document.createElement('div');
+						actions.className = 'code-actions';
+						actions.setAttribute('aria-hidden', 'false');
+
+						const fsBtn = document.createElement('button');
+						fsBtn.type = 'button';
+						fsBtn.className = 'code-action-btn';
+						fsBtn.setAttribute('aria-label', '放大显示');
+						fsBtn.title = '放大';
+						fsBtn.innerHTML = FULLSCREEN_SVG;
+
+						const copyBtn = document.createElement('button');
+						copyBtn.type = 'button';
+						copyBtn.className = 'code-action-btn';
+						copyBtn.setAttribute('aria-label', '复制代码');
+						copyBtn.title = '复制';
+						copyBtn.innerHTML = COPY_SVG;
+
+						actions.appendChild(fsBtn);
+						actions.appendChild(copyBtn);
+						pre.insertBefore(actions, pre.firstChild);
+
+						fsBtn.addEventListener('click', () => {
+							const isFs = pre.classList.toggle('is-fullscreen');
+							document.body.classList.toggle('code-fullscreen-open', isFs);
+							fsBtn.innerHTML = isFs ? EXIT_SVG : FULLSCREEN_SVG;
+							fsBtn.title = isFs ? '退出放大' : '放大';
+						});
+
+						copyBtn.addEventListener('click', async () => {
+							const code = pre.querySelector('code');
+							const text = code ? code.innerText : '';
+							try {
+								await navigator.clipboard.writeText(text);
+								copyBtn.classList.add('is-copied');
+								copyBtn.innerHTML = CHECK_SVG;
+								setTimeout(() => {
+									copyBtn.classList.remove('is-copied');
+									copyBtn.innerHTML = COPY_SVG;
+								}, 1400);
+							} catch (e) {
+								console.error('[code-copy] clipboard write failed', e);
+							}
+						});
+					});
+
+					// ESC 退出放大
+					document.addEventListener('keydown', (e) => {
+						if (e.key !== 'Escape') return;
+						const fs = document.querySelector('.prose pre.astro-code.is-fullscreen');
+						if (!fs) return;
+						fs.classList.remove('is-fullscreen');
+						document.body.classList.remove('code-fullscreen-open');
+						const btn = fs.querySelector('.code-action-btn[aria-label="放大显示"]');
+						if (btn) {
+							btn.innerHTML = FULLSCREEN_SVG;
+							btn.title = '放大';
+						}
+					});
+				}
+
+				if (document.readyState === 'loading') {
+					document.addEventListener('DOMContentLoaded', init);
+				} else {
+					init();
+				}
+			})();
+		</script>
 	</body>
 </html>
