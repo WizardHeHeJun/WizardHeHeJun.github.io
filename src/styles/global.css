@@ -218,8 +218,11 @@ pre.astro-code::before {
 pre.astro-code::after {
 	content: attr(data-language);
 	position: absolute;
-	top: 8px;
+	top: 0;
 	left: 76px;
+	height: 36px;
+	display: flex;
+	align-items: center;
 	font-size: 0.88em;
 	font-weight: 500;
 	color: #4a5568;
@@ -486,8 +489,15 @@ hr {
 	letter-spacing: 0.02em;
 }
 
-/* —— Lightbox 放大态：JS portal 到 body，box-shadow 模拟全屏遮罩
-       （跟 pre.is-fullscreen 同一套路：.prose 有 backdrop-filter，fixed 在内会塌） */
+/* —— Lightbox 容器：JS portal 三件（backdrop / figure / toolbar）到 body ——
+   .prose 有 backdrop-filter 会让 fixed 子塌成 absolute，所以必须 portal */
+.lightbox-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.72);
+	z-index: 999;
+	cursor: zoom-out;
+}
 .prose-figure-fullscreen {
 	position: fixed !important;
 	inset: 5vh 5vw;
@@ -498,29 +508,88 @@ hr {
 	align-items: center;
 	justify-content: center;
 	gap: 0.8em;
-	cursor: zoom-out;
+	pointer-events: none; /* 周围空白让 backdrop click 透过 */
 }
 .prose-figure-fullscreen img {
+	pointer-events: auto;
 	max-width: 100%;
 	max-height: 80vh;
 	width: auto;
 	height: auto;
 	border-radius: 14px;
-	box-shadow:
-		0 0 0 100vmax rgba(0, 0, 0, 0.7),
-		0 24px 64px rgba(0, 0, 0, 0.4);
-	cursor: zoom-out;
+	box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+	cursor: zoom-in;
+	transform-origin: center center;
+	transition: transform 0.18s ease;
+	user-select: none;
+	-webkit-user-drag: none;
+}
+.prose-figure-fullscreen img.is-zoomed {
+	cursor: grab;
+}
+.prose-figure-fullscreen img.is-dragging {
+	cursor: grabbing;
+	transition: none;
 }
 .prose-figure-fullscreen figcaption {
+	pointer-events: auto;
 	color: rgba(255, 255, 255, 0.85);
 	font-size: 0.95em;
 	font-style: italic;
 	letter-spacing: 0.04em;
 	max-width: 80vw;
 	text-align: center;
-	z-index: 1; /* 让 figcaption 在 box-shadow 遮罩之上 */
-	position: relative;
 }
+
+/* —— 右侧工具栏（仿 macOS 预览）—— */
+.lightbox-toolbar {
+	position: fixed;
+	top: 50%;
+	right: 16px;
+	transform: translateY(-50%);
+	z-index: 1001;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	padding: 12px 8px;
+	background: rgba(255, 255, 255, 0.08);
+	backdrop-filter: blur(12px) saturate(180%);
+	-webkit-backdrop-filter: blur(12px) saturate(180%);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	border-radius: 14px;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+.lightbox-toolbar button {
+	width: 36px;
+	height: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: none;
+	border-radius: 8px;
+	color: rgba(255, 255, 255, 0.85);
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		color 0.15s ease;
+}
+.lightbox-toolbar button:hover {
+	background: rgba(255, 255, 255, 0.18);
+	color: #fff;
+}
+.lightbox-zoom-level {
+	font-size: 0.7em;
+	color: rgba(255, 255, 255, 0.75);
+	font-weight: 500;
+	letter-spacing: 0.04em;
+	font-variant-numeric: tabular-nums;
+	min-width: 36px;
+	text-align: center;
+	margin: 2px 0;
+}
+
 body.figure-lightbox-open {
 	overflow: hidden;
 }
