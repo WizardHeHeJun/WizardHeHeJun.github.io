@@ -236,6 +236,13 @@ const { prevPost = null, nextPost = null } = Astro.props;
 				else break;
 			}
 			setActive(activeId);
+			// 第一个标题已经滚到 viewport 顶部（offset 内）→ 揭示 TOC 胶囊
+			// 没揭示前 .toc-mobile 用 CSS 设为 opacity:0 + pointer-events:none，
+			// 给 icon-only nav 留出独立的视觉空间（避免胶囊默认就占着不动）
+			if (mobile && items[0]) {
+				const firstRect = items[0].el.getBoundingClientRect();
+				mobile.classList.toggle('is-revealed', firstRect.top - offset <= 0);
+			}
 		};
 		window.addEventListener(
 			'scroll',
@@ -663,8 +670,18 @@ const { prevPost = null, nextPost = null } = Astro.props;
 		z-index: 9;
 		width: min(840px, 100% - 2em);
 		margin: 0 auto 0.8em;
-		/* 让 top 联动 body.header-hidden 切换（641-1279 视口收到 8px） */
-		transition: top 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+		/* top 联动 body.header-hidden 切换 / opacity+transform 联动 is-revealed 切换 */
+		transition:
+			top 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+			opacity 0.32s ease,
+			transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+	/* 未揭示态（默认）：胶囊隐藏。给 icon-only nav 留出独立的视觉空间，
+	   等用户真正滚到第一个标题（recompute 添加 .is-revealed）时才滑出来「接班」 */
+	.toc-mobile:not(.is-revealed) {
+		opacity: 0;
+		pointer-events: none;
+		transform: translateY(-8px);
 	}
 	@media (max-width: 1279px) {
 		.toc-mobile:not([hidden]) {
