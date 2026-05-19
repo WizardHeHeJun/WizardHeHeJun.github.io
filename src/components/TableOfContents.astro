@@ -283,6 +283,7 @@
 		left: 16px;
 		width: 240px;
 		max-height: calc(100vh - 100px);
+		min-height: min(60vh, 540px);
 		display: none;
 		padding: 0.4em 0.6em 0.6em;
 		background: transparent;
@@ -346,11 +347,13 @@
 		border-radius: 2px;
 	}
 
-	/* —— 底部跳转按钮组 —— */
+	/* —— 底部跳转按钮组 ——
+	   margin-top: auto 把 footer 推到 .toc-desktop 底部（无论目录项多寡）；
+	   配合 .toc-desktop 的 min-height，短目录时下方留空、按钮贴底 */
 	.toc-footer {
 		display: flex;
 		gap: 0.45em;
-		margin-top: 0.6em;
+		margin-top: auto;
 		padding-top: 0.5em;
 		flex-shrink: 0;
 	}
