@@ -358,8 +358,9 @@ const { prevPost = null, nextPost = null } = Astro.props;
 		top: 0;
 		left: 16px;
 		width: 240px;
-		/* max-height 由 JS 动态设（vh - top - 20）；CSS 这个是 SSR fallback */
-		max-height: calc(100vh - 100px);
+		/* height 由 JS 完全接管（vh - top - bottomGap）—— 不在 CSS 里限 max-height，
+		   否则会跟 JS 计算的 height 打架（viewport 小于某值时 max-height 会赢，
+		   导致 TOC 没真正撑到 viewport 底） */
 		display: none;
 		padding: 0.9em 0.8em 0.8em;
 		background: rgba(255, 255, 255, 0.55);
