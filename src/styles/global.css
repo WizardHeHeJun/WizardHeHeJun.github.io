@@ -79,6 +79,9 @@ textarea,
 html,
 body {
 	min-height: 100vh;
+	/* 安全网：禁止整页发生横向滚动（任何元素超宽会被裁掉，不会推宽文档）。
+	   用 clip 而不是 hidden —— clip 不创建滚动容器，不破坏子元素的 sticky/fixed */
+	overflow-x: clip;
 }
 body {
 	font-family: 'LXGW WenKai Screen', 'LXGW WenKai', -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
@@ -199,6 +202,9 @@ pre.astro-code {
 	padding: 2.6em 1.4em 1.2em !important;
 	border-radius: 10px;
 	border: 1px solid rgba(0, 0, 0, 0.08);
+	/* 长代码行在 pre 内部横向滚动；不加这个 pre 会被内容撑宽，
+	   把整页推到 viewport 外，触发文档级横向滚动 → header 露底 */
+	overflow-x: auto;
 	box-shadow:
 		inset 0 36px 0 #ecedef,
 		inset 0 36px 0 0.5px rgba(0, 0, 0, 0.06),
