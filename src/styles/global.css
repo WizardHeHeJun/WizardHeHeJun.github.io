@@ -127,13 +127,15 @@ h6 {
 	line-height: 1.2;
 }
 h1 {
-	font-size: 3.052em;
+	/* 响应式：移动 ~1.7em（27px @ 16px base） → 桌面 3.052em（49px）
+	   防止长中文标题在 ≤640 视口下挤成 5-6 行 */
+	font-size: clamp(1.7em, 1.1em + 2.6vw, 3.052em);
 }
 h2 {
-	font-size: 2.441em;
+	font-size: clamp(1.5em, 1em + 2vw, 2.441em);
 }
 h3 {
-	font-size: 1.953em;
+	font-size: clamp(1.3em, 0.95em + 1.4vw, 1.953em);
 }
 h4 {
 	font-size: 1.563em;
