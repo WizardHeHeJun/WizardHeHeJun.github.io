@@ -229,7 +229,33 @@ global.css body 字体链：
 要兼容 Safari → 同时写 `backdrop-filter` 和 `-webkit-backdrop-filter`。
 :::
 
-## 十一、Mermaid 图表
+## 十一、链接卡（OG Link Card）
+
+任何独占一段的裸 URL，会自动抓 Open Graph 元数据，渲染成横版玻璃卡——左侧标题/描述/favicon/host，右侧缩略图。
+
+写法就这么简单：
+
+````markdown
+看下面这个站点：
+
+https://astro.build/
+
+正文继续……
+````
+
+效果：
+
+https://astro.build/
+
+https://github.com/withastro/astro
+
+https://mermaid.js.org/
+
+:::warning
+**OG 数据离线抓取**——CI 不联网。新写裸 URL 后必须本地跑一次 `npm run refresh-og`，把 `src/data/og-cache.json` 一起 commit。没抓到（或站点没 OG）会降级为 fallback 文本卡，不会断渲染。
+:::
+
+## 十二、Mermaid 图表
 
 ```` ```mermaid ```` 代码块会被客户端 lazy load 渲染——不含 mermaid 块的页面零 JS 增量。
 
@@ -245,7 +271,7 @@ flowchart LR
 
 完整图类示例（流程图 / 时序图 / 状态图 / 类图 / 甘特图 / 饼图 / 思维导图 / ER 图 / Git 图 / 四象限图）见 [Mermaid 画图实例](/blog/mermaid-demo/)。
 
-## 十二、分隔线
+## 十三、分隔线
 
 用三个或更多 `-` / `*` / `_`：
 
@@ -253,7 +279,7 @@ flowchart LR
 
 分隔线在玻璃主题里是一条带着渐变的细线，比纯灰色更柔和。
 
-## 十三、其他你可能不知道的细节
+## 十四、其他你可能不知道的细节
 
 :::info
 **这些功能不需要在 markdown 里写——自动生效**：

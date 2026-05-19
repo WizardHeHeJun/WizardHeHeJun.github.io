@@ -1,1 +1,29 @@
-{}
+{
+  "https://astro.build/": {
+    "url": "https://astro.build/",
+    "image": "https://astro.build/og/astro.jpg",
+    "title": "Astro",
+    "description": "Astro builds fast content sites, powerful web applications, dynamic server APIs, and everything in-between.",
+    "favicon": "https://astro.build/favicon.svg",
+    "fetchedAt": "2026-05-19T09:53:58.486Z",
+    "status": "ok"
+  },
+  "https://github.com/withastro/astro": {
+    "url": "https://github.com/withastro/astro",
+    "image": "https://opengraph.githubassets.com/f924706d1eb80b01cb916d3f59e45b044d644f74ba844e11c9d48b6a39184cb6/withastro/astro",
+    "title": "GitHub - withastro/astro: The web framework for content-driven websites. ⭐️ Star to support our work!",
+    "description": "The web framework for content-driven websites. ⭐️ Star to support our work! - withastro/astro",
+    "favicon": "https://github.githubassets.com/favicons/favicon.svg",
+    "fetchedAt": "2026-05-19T09:53:59.781Z",
+    "status": "ok"
+  },
+  "https://mermaid.js.org/": {
+    "url": "https://mermaid.js.org/",
+    "image": "https://mermaid.js.org/mermaid-logo-horizontal.svg",
+    "title": "Mermaid",
+    "description": "Create diagrams and visualizations using text and code.",
+    "favicon": "https://mermaid.js.org/favicon.ico",
+    "fetchedAt": "2026-05-19T09:54:00.001Z",
+    "status": "ok"
+  }
+}

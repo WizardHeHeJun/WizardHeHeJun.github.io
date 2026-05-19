@@ -1,8 +1,10 @@
-// 抓取 friends.json 里每个 URL 的 OpenGraph / Twitter / favicon 元数据，缓存到 src/data/og-cache.json
+// 抓取 friends.json + 博文中独占段落的裸 URL 的 OpenGraph / Twitter / favicon 元数据
+// 缓存到 src/data/og-cache.json，被 friends.astro 和 plugins/remark-link-card.mjs 共用
 // 默认增量：只抓未缓存或 status='failed' 的 URL；--force 重抓全部
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 
 const FRIENDS_FILE = 'src/data/friends.json';
+const BLOG_DIR = 'src/content/blog';
 const CACHE_FILE = 'src/data/og-cache.json';
 const UA = 'Mozilla/5.0 (compatible; WizardHeHeJun-Blog-OG/1.0)';
 const TIMEOUT_MS = 8000;
@@ -13,9 +15,35 @@ const force = process.argv.includes('--force');
 const friends = JSON.parse(readFileSync(FRIENDS_FILE, 'utf8'));
 const cache = existsSync(CACHE_FILE) ? JSON.parse(readFileSync(CACHE_FILE, 'utf8')) : {};
 
-const urls = [...new Set(friends.map((f) => f.url).filter(Boolean))];
+// 从所有博文里抽出「段落只含一个裸 URL」的 URL
+// 规则：剥 frontmatter + 剥 ``` 代码块 → 按空行切段 → 整段仅匹配 URL 才收
+const URL_LINE_RE = /^<?(https?:\/\/[^\s<>]+)>?$/;
+function extractBlogUrls() {
+	if (!existsSync(BLOG_DIR)) return [];
+	const files = readdirSync(BLOG_DIR).filter((f) => f.endsWith('.md') || f.endsWith('.mdx'));
+	const urls = new Set();
+	for (const f of files) {
+		const md = readFileSync(`${BLOG_DIR}/${f}`, 'utf8');
+		const body = md.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '');
+		const noCode = body.replace(/```[\s\S]*?```/g, '');
+		const blocks = noCode.split(/\r?\n\s*\r?\n/);
+		for (const blk of blocks) {
+			const trimmed = blk.trim();
+			const m = URL_LINE_RE.exec(trimmed);
+			if (m) urls.add(m[1]);
+		}
+	}
+	return [...urls];
+}
+
+const friendUrls = friends.map((f) => f.url).filter(Boolean);
+const blogUrls = extractBlogUrls();
+const urls = [...new Set([...friendUrls, ...blogUrls])];
 const todo = force ? urls : urls.filter((u) => !cache[u] || cache[u].status === 'failed');
-console.log(`To fetch: ${todo.length} / ${urls.length}${force ? '  (--force)' : ''}`);
+console.log(
+	`To fetch: ${todo.length} / ${urls.length}  ` +
+		`(friends=${friendUrls.length}, blog=${blogUrls.length})${force ? '  --force' : ''}`,
+);
 
 if (todo.length === 0) {
 	console.log('Nothing to do.');

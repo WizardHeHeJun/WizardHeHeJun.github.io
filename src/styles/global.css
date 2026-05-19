@@ -630,6 +630,127 @@ body.figure-lightbox-open {
 	}
 }
 
+/* ============================================================
+   OG 链接卡（裸 URL 段落转，见 plugins/remark-link-card.mjs）
+   左：标题 + 描述 + favicon + host  /  右：缩略图
+   ============================================================ */
+.prose .link-card {
+	display: flex;
+	gap: 0;
+	margin: 1.4em 0;
+	min-height: 110px;
+	background: rgba(255, 255, 255, 0.55);
+	backdrop-filter: blur(12px) saturate(180%);
+	-webkit-backdrop-filter: blur(12px) saturate(180%);
+	border: 1px solid rgba(255, 255, 255, 0.5);
+	border-radius: 14px;
+	box-shadow: 0 4px 16px rgba(31, 38, 135, 0.08);
+	text-decoration: none;
+	color: rgb(var(--gray-dark));
+	overflow: hidden;
+	transition:
+		transform 0.2s ease,
+		box-shadow 0.25s ease,
+		background 0.2s ease;
+}
+.prose .link-card:hover {
+	transform: translateY(-2px);
+	background: rgba(255, 255, 255, 0.75);
+	box-shadow: 0 14px 36px rgba(31, 38, 135, 0.18);
+}
+.prose .link-card-body {
+	flex: 1 1 auto;
+	min-width: 0; /* 让内部 text-overflow 生效 */
+	display: flex;
+	flex-direction: column;
+	gap: 0.35em;
+	padding: 0.95em 1.1em;
+	justify-content: space-between;
+}
+.prose .link-card-title {
+	font-size: 0.98em;
+	font-weight: 600;
+	color: #000;
+	line-height: 1.35;
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+.prose .link-card-desc {
+	font-size: 0.82em;
+	color: rgb(var(--gray));
+	line-height: 1.45;
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+.prose .link-card-meta {
+	display: flex;
+	align-items: center;
+	gap: 0.4em;
+	font-size: 0.75em;
+	color: rgb(var(--gray));
+	letter-spacing: 0.02em;
+}
+.prose .link-card-favicon {
+	width: 14px;
+	height: 14px;
+	border-radius: 3px;
+	object-fit: contain;
+	flex-shrink: 0;
+	background: #fff;
+}
+.prose .link-card-host {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.prose .link-card-image {
+	flex: 0 0 200px;
+	background: rgba(0, 0, 0, 0.04);
+	overflow: hidden;
+}
+.prose .link-card-image img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.4s ease;
+}
+.prose .link-card:hover .link-card-image img {
+	transform: scale(1.04);
+}
+.prose .link-card-fallback {
+	min-height: 0;
+}
+.prose .link-card-fallback .link-card-title {
+	font-size: 0.88em;
+	font-weight: 500;
+	color: var(--accent);
+	-webkit-line-clamp: 1;
+	word-break: break-all;
+}
+
+@media (max-width: 640px) {
+	.prose .link-card {
+		flex-direction: column-reverse;
+		min-height: 0;
+	}
+	.prose .link-card-image {
+		flex: 0 0 140px;
+		width: 100%;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.prose .link-card,
+	.prose .link-card-image img {
+		transition: background 0.2s ease;
+		transform: none !important;
+	}
+}
+
 .sr-only {
 	border: 0;
 	padding: 0;
