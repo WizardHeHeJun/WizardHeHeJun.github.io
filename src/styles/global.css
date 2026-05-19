@@ -191,7 +191,7 @@ pre > code {
    astro shiki 输出 <pre class="astro-code" data-language="xxx">；
    inline style 自带 background-color，我们用 inset box-shadow 画 36px header 条覆盖在它上方
 */
-.prose pre.astro-code {
+pre.astro-code {
 	position: relative;
 	margin: 1.4em 0;
 	padding: 2.6em 1.4em 1.2em !important;
@@ -202,7 +202,7 @@ pre > code {
 		inset 0 36px 0 0.5px rgba(0, 0, 0, 0.06),
 		0 4px 16px rgba(31, 38, 135, 0.08);
 }
-.prose pre.astro-code::before {
+pre.astro-code::before {
 	content: '';
 	position: absolute;
 	top: 12px;
@@ -215,7 +215,7 @@ pre > code {
 		20px 0 #ffbd2e,
 		40px 0 #27c93f;
 }
-.prose pre.astro-code::after {
+pre.astro-code::after {
 	content: attr(data-language);
 	position: absolute;
 	top: 8px;
@@ -227,13 +227,13 @@ pre > code {
 	letter-spacing: 0.08em;
 	font-family: 'LXGW WenKai Screen', sans-serif;
 }
-.prose pre.astro-code[data-language="plaintext"]::after,
-.prose pre.astro-code[data-language="text"]::after {
+pre.astro-code[data-language="plaintext"]::after,
+pre.astro-code[data-language="text"]::after {
 	display: none;
 }
 
 /* —— 代码块右上角动作按钮：放大 + 复制（JS 在 BlogPost.astro 末尾注入） —— */
-.prose pre.astro-code .code-actions {
+pre.astro-code .code-actions {
 	position: absolute;
 	top: 6px;
 	right: 8px;
@@ -241,7 +241,7 @@ pre > code {
 	gap: 6px;
 	z-index: 2;
 }
-.prose pre.astro-code .code-action-btn {
+pre.astro-code .code-action-btn {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -258,16 +258,16 @@ pre > code {
 		color 0.15s ease,
 		transform 0.15s ease;
 }
-.prose pre.astro-code .code-action-btn:hover {
+pre.astro-code .code-action-btn:hover {
 	background: rgba(35, 55, 255, 0.1);
 	color: #2337ff;
 	transform: translateY(-1px);
 }
-.prose pre.astro-code .code-action-btn.is-copied {
+pre.astro-code .code-action-btn.is-copied {
 	background: rgba(16, 185, 129, 0.15);
 	color: #10b981;
 }
-.prose pre.astro-code .code-action-btn svg {
+pre.astro-code .code-action-btn svg {
 	display: block;
 }
 
@@ -275,7 +275,7 @@ pre > code {
    box-shadow spread 100vmax 模拟全屏暗遮罩 + 大模糊阴影；
    这样不需要 body::before 单独画一层（避免跟 .prose 的 backdrop-filter
    创建的 stacking context 打架，导致 fullscreen pre 跳不到最上层）*/
-.prose pre.astro-code.is-fullscreen {
+pre.astro-code.is-fullscreen {
 	position: fixed !important;
 	inset: 5vh 5vw;
 	margin: 0 !important;
@@ -295,13 +295,13 @@ body.code-fullscreen-open {
 }
 
 @media (max-width: 640px) {
-	.prose pre.astro-code {
+	pre.astro-code {
 		padding: 2.4em 1em 1em !important;
 	}
-	.prose pre.astro-code::after {
+	pre.astro-code::after {
 		display: none;
 	}
-	.prose pre.astro-code.is-fullscreen {
+	pre.astro-code.is-fullscreen {
 		inset: 2vh 2vw;
 		max-height: 96vh;
 	}

@@ -299,10 +299,32 @@ const {
 						pre.insertBefore(actions, pre.firstChild);
 
 						fsBtn.addEventListener('click', () => {
-							const isFs = pre.classList.toggle('is-fullscreen');
-							document.body.classList.toggle('code-fullscreen-open', isFs);
-							fsBtn.innerHTML = isFs ? EXIT_SVG : FULLSCREEN_SVG;
-							fsBtn.title = isFs ? '退出放大' : '放大';
+							// .prose 有 backdrop-filter，会让 position: fixed 相对 .prose 而非
+							// viewport（CSS 规范），且 .prose 可能裁剪 → fullscreen pre 会消失。
+							// 解决：portal 把 pre 临时移到 body 直接子级，用 anchor comment 标记原位
+							if (pre.dataset.fsActive === '1') {
+								const anchor = pre._origAnchor;
+								if (anchor && anchor.parentNode) {
+									anchor.parentNode.insertBefore(pre, anchor);
+									anchor.remove();
+								}
+								pre._origAnchor = null;
+								pre.dataset.fsActive = '';
+								pre.classList.remove('is-fullscreen');
+								document.body.classList.remove('code-fullscreen-open');
+								fsBtn.innerHTML = FULLSCREEN_SVG;
+								fsBtn.title = '放大';
+							} else {
+								const anchor = document.createComment(' code-fs-anchor ');
+								pre.parentNode.insertBefore(anchor, pre);
+								pre._origAnchor = anchor;
+								document.body.appendChild(pre);
+								pre.dataset.fsActive = '1';
+								pre.classList.add('is-fullscreen');
+								document.body.classList.add('code-fullscreen-open');
+								fsBtn.innerHTML = EXIT_SVG;
+								fsBtn.title = '退出放大';
+							}
 						});
 
 						copyBtn.addEventListener('click', async () => {
@@ -322,18 +344,13 @@ const {
 						});
 					});
 
-					// ESC 退出放大
+					// ESC 退出放大（fullscreen pre 已被 portal 到 body 直接子级）
 					document.addEventListener('keydown', (e) => {
 						if (e.key !== 'Escape') return;
-						const fs = document.querySelector('.prose pre.astro-code.is-fullscreen');
+						const fs = document.querySelector('pre.astro-code.is-fullscreen');
 						if (!fs) return;
-						fs.classList.remove('is-fullscreen');
-						document.body.classList.remove('code-fullscreen-open');
 						const btn = fs.querySelector('.code-action-btn[aria-label="放大显示"]');
-						if (btn) {
-							btn.innerHTML = FULLSCREEN_SVG;
-							btn.title = '放大';
-						}
+						if (btn) btn.click(); // 复用 toggle 逻辑（含 portal 回位）
 					});
 				}
 
