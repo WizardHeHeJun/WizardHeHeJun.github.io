@@ -882,7 +882,10 @@ const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 		.ticker {
 			display: flex;
 		}
-		h2 {
+		/* 非博文页（无 TOC）：ticker 占 header 中部，h2 让位
+		   博文页（body.has-toc）：ticker 被 TOC 取代，h2 保持可见
+		   TOC 真正 reveal 后再由 body.toc-revealed 规则让 h2 淡出 */
+		body:not(.has-toc) h2 {
 			display: none;
 		}
 	}
