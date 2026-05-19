@@ -278,10 +278,12 @@ const { prevPost = null, nextPost = null } = Astro.props;
 			if (sig === curSig) return; // 避免无意义重绘
 			curSig = sig;
 			desktop.style.transform = `translateY(${top}px)`;
-			// 用 height（不是 max-height）强制 TOC 卡占满到 viewport 底部
-			// —— 这样 prev-next + footer + progress 三件套（margin-top: auto）
-			// 真的被推到网页底部，不只是「内容自然撑到哪算哪」
-			desktop.style.height = vh - top - 20 + 'px';
+			// 用 max-height（不是 height）让 TOC 卡按内容自然撑、上限是 viewport 余量：
+			// - 短目录：TOC 卡小，bottom 紧接 list 末尾（视觉上 TOC 卡矮）
+			// - 长目录：TOC 卡撑到 max-height，list 内部滚动，bottom 紧接 list-wrap 末尾（=卡底=viewport 底）
+			// - header 隐藏：max-height 跟着增大，长目录 TOC 卡撑得更高
+			desktop.style.maxHeight = vh - top - 20 + 'px';
+			desktop.style.height = '';
 		};
 		let rafTop = 0;
 		const onScrollTop = () => {
@@ -349,10 +351,8 @@ const { prevPost = null, nextPost = null } = Astro.props;
 		top: 0;
 		left: 16px;
 		width: 240px;
-		/* height 由 JS 动态设（vh - top - 20）让卡片始终撑到 viewport 底；
-		   下面两个仅作 SSR fallback / JS 还没跑前的初始尺寸 */
+		/* max-height 由 JS 动态设（vh - top - 20）；CSS 这个是 SSR fallback */
 		max-height: calc(100vh - 100px);
-		min-height: min(60vh, 540px);
 		display: none;
 		padding: 0.9em 0.8em 0.8em;
 		background: rgba(255, 255, 255, 0.55);
@@ -404,18 +404,16 @@ const { prevPost = null, nextPost = null } = Astro.props;
 		letter-spacing: 0.04em;
 	}
 	.toc-desktop .toc-list-wrap {
-		/* flex: 1 1 0 让 list-wrap 占满 .toc-desktop 剩余空间；
-		   - 长目录：list-wrap 撑满（list 内部自然滚动），底部 prev-next/footer/progress
-		     紧贴 list-wrap 底（也就是 desktop 底，也就是 viewport 底）
-		   - 短目录：list-wrap 仍撑满，但 ul 高度按内容（小），下方是 list-wrap 内部空白，
-		     被 mask 渐变柔和淡出 —— 视觉上 list 顶部对齐 + 中间淡出 + 底部按钮贴底
-		   这样无论目录长短，bottom group 都贴 viewport 底 */
-		flex: 1 1 0;
+		/* flex: 0 1 auto 按 ul 内容自然撑（不主动 grow 占空间）：
+		   - 短目录：list-wrap 矮，bottom block 紧接（TOC 卡整体小）
+		   - 长目录：list-wrap 受 desktop max-height 间接限制，内容超出时自动滚动
+		     bottom block 紧接 list-wrap 末尾（视觉上贴 TOC 卡底） */
+		flex: 0 1 auto;
 		min-height: 0;
 		overflow-y: auto;
 		margin-right: -0.4em;
 		padding-right: 0.4em;
-		/* 底部柔和淡出遮罩，避免硬切 */
+		/* 底部柔和淡出遮罩，避免硬切（仅滚动时可见） */
 		-webkit-mask-image: linear-gradient(180deg, black 0%, black calc(100% - 28px), transparent 100%);
 		mask-image: linear-gradient(180deg, black 0%, black calc(100% - 28px), transparent 100%);
 	}
