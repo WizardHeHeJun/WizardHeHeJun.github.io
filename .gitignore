@@ -2,8 +2,6 @@
 dist/
 # generated types
 .astro/
-# probe / debug scratch
-tmp/
 
 # dependencies
 node_modules/

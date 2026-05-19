@@ -622,9 +622,8 @@ Astro 6 的 page scoped CSS 编译时给选择器尾部加 `[data-astro-cid-XXX]
 ```js
 import mdx from '@astrojs/mdx';
 import remarkDirective from 'remark-directive';
-import remarkInfographic from './plugins/remark-infographic.mjs';
 import remarkShokaDirectives from './plugins/remark-shoka-directives.mjs';
-const remarkPlugins = [remarkDirective, remarkShokaDirectives, remarkInfographic];
+const remarkPlugins = [remarkDirective, remarkShokaDirectives];
 export default defineConfig({
   integrations: [mdx({ remarkPlugins })],
   markdown: { remarkPlugins },
@@ -633,48 +632,21 @@ export default defineConfig({
 
 当前 7 篇博文全是 `.md`，已经把 `mdx({ remarkPlugins })` 也注册——以后写 `.mdx` 不用再改。
 
-### 40. ```infographic 代码块写信息图（antv SSR 静态渲染）
+### 40. 供应链审查教训：obfuscated preinstall 一律否决
 
-博文里写 ```` ```infographic ```` fenced code block + YAML body，build 时被 [plugins/remark-infographic.mjs](plugins/remark-infographic.mjs) 处理成内联 SVG，**零运行时 JS**。
+2026-05-19 尝试集成 `@antv/infographic@0.3.19`，部署红。根因：包里有一个 498KB obfuscated `index.js` 在 `preinstall` lifecycle hook 跑：
+- `createHash` / `pbkdf2Sync` / `randomBytes` 等 crypto API
+- 27 处 `fetch` + 5 处 `http` + 多处 `fs.*`
+- 强制要求 bun（绕开 npm/pnpm/yarn 用户视线）
 
-**最简语法**：
-````markdown
-```infographic
-template: chart-pie-plain-text
-data:
-  items:
-    - { value: 30, label: A }
-    - { value: 70, label: B }
-```
-````
+回滚后总结约定：**新引入任何 npm 包前，必做的安全 checklist**：
+1. `grep -E 'preinstall|postinstall' node_modules/<pkg>/package.json`——有 install hook 就要看脚本内容
+2. install hook 脚本 ≥ 50 行 + 看不懂 = 默认拒绝
+3. obfuscated 代码（变量名形如 `_0x1234`、单文件几百 KB）= 直接拒绝
+4. 强制非主流 runtime（bun-only / deno-only）= 警惕
+5. crypto + fetch 组合在 install hook 里 = 大概率 phone-home，否决
 
-**关键约定**：
-
-1. **lang 必须是 `infographic`**——不是 `mermaid`、不是 `chart`。可选第二 token 作 template override：` ```infographic chart-pie-plain-text `
-2. **body 是 YAML**（不是 koharu 文档里的 indented DSL，也不是 JSON）
-3. **`themeConfig` 留空时自动注入玻璃配色**（`palette: [#2337ff, #ff5d8f, #66ccff, #ffd1e4, #b8860b]` + LXGW 字体）。**用户写了 `themeConfig` 则跳过注入**
-4. **错误降级**：YAML 解析错或 antv 报错 → 输出 `<figure class="infographic infographic-error">` 含原 DSL + 错误信息，**build 不挂**
-5. **async pipeline**：antv SSR `renderToString` 是异步，plugin 用「两遍 visit」策略（同步收集 → `Promise.all` → 同步回填 mdast `html` 节点）
-
-**Skill 联动**：5 个 `.claude/skills/infographic-*` skill 覆盖端到端流程，触发词「信息图 / 做张图 / infographic」。详见各 skill 的 SKILL.md。
-
-### 41. src/designs/ 和 src/templates/ 扩展规范
-
-**默认情况**：用 antv 内置的 276 个模板就够（见 `src/templates/built-in.ts` 速查的 50 个 + `getAllTemplates()` 拿全集）。**不需要建任何 `src/designs/*.tsx` 文件**。
-
-**何时要写自定义 component**：
-- antv 内置模板的视觉/交互不满足你的需求
-- 想做 my-blog 特定主题的 item / structure
-- 例如：「博文页脚要个时间线的 item，要支持鼠标 hover 时显示备注」
-
-**目录约定**（已建好骨架）：
-- `src/designs/items/[Name].tsx` —— 单个数据项 component，命名 CamelCase
-- `src/designs/structures/[Name].tsx` —— 布局结构 component
-- 每个 .tsx 文件内调 `registerItem('xxx', ...)` 或 `registerStructure('xxx', ...)` 注册
-
-**触发注册**：写完 .tsx 后要在 antv ssr 调用前 import 一次以触发副作用。建 `src/designs/{items,structures}/index.ts` 做 barrel，在 `plugins/remark-infographic.mjs` 顶部 import。具体见 `src/designs/items/README.md`。
-
-**同步 built-in.ts**：新增 structure 后要把名字加进 `BUILT_IN_TEMPLATES`——`.claude/skills/infographic-template-updater` skill 一次性完成。
+如果某天真要用 antv：clone 源码自己 build，绕开 npm 分发版的 install hook。
 
 ## 写新博文
 
@@ -786,13 +758,6 @@ npm run refresh-og --force  # 全量重抓
 | `scripts/gen-lqip.mjs` | 扫 `src/assets/blog/*.jpg` 生成 LQIP base64 + dominant 色（prebuild 自动跑） |
 | `scripts/new-post.mjs` | 交互式新建博文 CLI（npm run new） |
 | `scripts/refresh-og.mjs` | 抓 friends.json URL 的 OG meta 到 og-cache.json（手动跑 npm run refresh-og） |
-| `scripts/probe-infographic.mjs` | 一次性 probe：验证 @antv/infographic SSR + 玻璃 theme（结果落 tmp/） |
-| `plugins/remark-infographic.mjs` | **```infographic 代码块 → 内联 SVG**（async 两遍 visit + try/catch 错误降级 + 自动玻璃 theme 注入） |
-| `src/templates/glass-theme.ts` | 玻璃风 antv themeConfig（GLASS_PALETTE / GLASS_FONT / GLASS_THEME_CONFIG） |
-| `src/templates/built-in.ts` | antv 内置模板速查（50 个精选，覆盖 chart/compare/hierarchy/list/relation/sequence/quadrant）+ `getAllTemplates()` 桥接到 antv runtime 注册表（276 个全集） |
-| `src/templates/index.ts` | 模板聚合 barrel 入口 |
-| `src/designs/items/`, `src/designs/structures/` | antv 自定义 Item / Structure component 落点（骨架空目录 + README，详见 §41） |
-| `.claude/skills/infographic-{creator,syntax-creator,item-creator,structure-creator,template-updater}/` | 5 个 infographic skill（从 koharu 移植 + my-blog 适配；触发词「信息图 / 做张图 / infographic」）|
 | `public/favicon-*.png` | 生成的 favicon 输出 |
 | `public/giscus-theme.css` | **giscus 自定义主题**（透明面板 + 玻璃输入框 + 粉色按钮 + sort tabs 胶囊）|
 | `public/memories/` | 回忆图片目录（直接拖图进去，JSON 里引用 `/memories/<文件名>`）|

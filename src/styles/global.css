@@ -331,47 +331,6 @@ hr {
 	}
 }
 
-/* ============================================================
-   antv/infographic inline SVG（编译期由 plugins/remark-infographic.mjs 渲染）
-   ============================================================ */
-.prose .infographic {
-	margin: 1.8em auto;
-	padding: 1.4em 1.6em;
-	background: var(--glass-bg);
-	backdrop-filter: var(--glass-blur);
-	-webkit-backdrop-filter: var(--glass-blur);
-	border: var(--glass-border);
-	border-radius: 18px;
-	box-shadow: var(--glass-shadow);
-	overflow: hidden;
-}
-.prose .infographic svg {
-	display: block;
-	width: 100%;
-	height: auto;
-	max-width: 100%;
-}
-.prose .infographic-error {
-	border-color: rgba(239, 68, 68, 0.35);
-	background: rgba(239, 68, 68, 0.05);
-}
-.prose .infographic-error pre {
-	margin: 0 0 0.6em;
-	font-size: 0.8em;
-	background: rgba(0, 0, 0, 0.06);
-}
-.prose .infographic-error small {
-	color: #c0392b;
-	font-style: italic;
-}
-@media (max-width: 640px) {
-	.prose .infographic {
-		padding: 1em;
-		border-radius: 14px;
-		margin: 1.4em -0.4em;
-	}
-}
-
 .sr-only {
 	border: 0;
 	padding: 0;
