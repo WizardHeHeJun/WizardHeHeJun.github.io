@@ -435,10 +435,10 @@ const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 		border-radius: 2px;
 	}
 
-	/* —— 平板（721-960）：icon-only nav。
+	/* —— 中等视口（721-1280）：icon-only nav。
 	   保留 dropdown 结构（hover/tap 仍可触发），藏掉文字标签
-	   避免「首页/画板/博客 ▾...」一字一行的塌陷视觉 */
-	@media (max-width: 960px) {
+	   完整文字 nav 算下来要 ~1200px，所以 ≤1280 全部走 icon-only */
+	@media (max-width: 1280px) {
 		header {
 			padding: 0 0.6em;
 		}
@@ -465,9 +465,9 @@ const tickerItems = recent.length > 0 ? [...recent, recent[0]] : [];
 			height: 22px;
 		}
 	}
-	/* 仅在 721-960 这段 icon-only 范围藏站名 —— 让出 ~160px 给 nav + 社交图标。
+	/* 仅在 721-1280 这段 icon-only 范围藏站名 —— 让出 ~160px 给 nav + 社交图标。
 	   ≤720 由汉堡接管，那时 h2 重新出现并居中（既有规则） */
-	@media (min-width: 721px) and (max-width: 960px) {
+	@media (min-width: 721px) and (max-width: 1280px) {
 		h2 {
 			display: none;
 		}
