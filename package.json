@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
+    "cli": "node scripts/blog-cli.mjs",
     "new": "node scripts/new-post.mjs",
     "refresh-og": "node scripts/refresh-og.mjs",
     "prebuild": "node scripts/gen-lqip.mjs",
@@ -25,7 +26,9 @@
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
+    "@clack/prompts": "^1.4.0",
     "astro-pagefind": "^2.0.0",
-    "pagefind": "^1.5.2"
+    "pagefind": "^1.5.2",
+    "tar": "^7.5.15"
   }
 }

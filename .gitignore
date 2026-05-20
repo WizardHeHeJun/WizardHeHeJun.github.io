@@ -22,3 +22,10 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# blog cli backups (local-only safety net)
+backups/
+
+# cms standalone subproject (phase 2)
+cms/node_modules/
+cms/.vite/
