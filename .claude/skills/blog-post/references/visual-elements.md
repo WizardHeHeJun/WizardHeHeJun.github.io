@@ -1,6 +1,6 @@
 # 视觉表现选型
 
-写技术 / 项目类博文时，**主动建议**下面的可视化元素，让正文更易读。my-blog 已经接好的工具：
+写技术 / 项目类博文时，**主动建议**下面的可视化元素，让正文更易读。本项目已经接好的工具：
 
 - **Mermaid** 图——客户端 lazy load，约 20 种图类（flowchart / sequence / class / state / pie / mindmap / gitgraph / timeline / sankey / quadrant / erDiagram 等）；博文里有 mermaid 块时才动态加载 ~700KB，没有则零负担
 - **Markdown 表格**——自动套样式：表头粉色底 + 首列微底色当行标签 + 列分隔 + 行 hover + 窄屏横滑 + 边缘渐隐

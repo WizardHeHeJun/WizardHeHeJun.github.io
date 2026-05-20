@@ -28,7 +28,7 @@
 ### Step 2: 启动 CMS
 
 ```powershell
-cd D:\bot\my-blog
+# 先确保 cwd 在项目根目录
 npm run cms
 ```
 
@@ -133,12 +133,13 @@ printf 'npm run new 用起来如何\nnpm-run-new-review\n2\ncli,scaffold,astro\n
 
 按 [hero-image.md](hero-image.md) §A：
 
-1. **Read 工具看一眼 `C:\Users\me\Pictures\anime\monitor.jpg`**——确认能开 + 横版 + 露脸 + 无水印
-2. 假设博文 slug 是 `feishu-doc-monitor-v2`，目标路径 `src/assets/blog/feishu-doc-monitor-v2.jpg`
-3. **复制**：
+1. **Read 工具看一眼** 用户给的源路径（`C:\Users\me\Pictures\anime\monitor.jpg`）——确认能开 + 横版 + 露脸 + 无水印
+2. 假设博文 slug 是 `feishu-doc-monitor-v2`，目标路径 `src/assets/blog/feishu-doc-monitor-v2.jpg`（相对项目根）
+3. **复制**（cwd 在项目根目录）：
    ```powershell
-   Copy-Item "C:\Users\me\Pictures\anime\monitor.jpg" "D:\bot\my-blog\src\assets\blog\feishu-doc-monitor-v2.jpg"
+   Copy-Item "C:\Users\me\Pictures\anime\monitor.jpg" "src/assets/blog/feishu-doc-monitor-v2.jpg"
    ```
+   源路径按用户给的样子填，目标路径恒为相对的 `src/assets/blog/<slug>.<ext>`。
 4. **再 Read 确认拷贝成功**
 5. 如果是竖图 → 加进 `scripts/crop-hero.mjs` 跑一次
 6. CMS form 的 heroImage 字段填 `../../assets/blog/feishu-doc-monitor-v2.jpg`

@@ -1,7 +1,6 @@
-# CLAUDE.md — WizardHeHeJun's Notes
+# CLAUDE.md
 
 > 个人博客（中文，二次元玻璃风）。Astro 6 + GitHub Pages + GitHub Actions。
-> 线上：https://wizardhehejun.github.io/
 
 本文是项目编码规范。新功能、新组件、新博文都从这里出发；遇冲突以本文为准。
 
@@ -151,6 +150,7 @@ CSS 变量统一定义在 `:root`（[src/styles/global.css](src/styles/global.cs
 - SVG 尺寸**写 HTML 属性**：`<svg width="22" height="22">`，不靠 CSS（Astro scoped CSS 跨边界有 bug）
 - 容器统一 40px 圆按钮 + `flex-shrink: 0` 兜底
 - 颜色用 `fill="currentColor"`，CSS 改 `color` 控制
+- 社交链接（GitHub / 哔哩哔哩 / X / 邮箱等）在 [Header.astro](src/components/Header.astro) 与 [Footer.astro](src/components/Footer.astro) 内 hardcoded inline SVG `<a>`，不走数据文件——改链接 / 加平台直接编辑这两个组件
 
 ### 动画与无障碍
 
@@ -398,7 +398,7 @@ npm run refresh-og --force   # 全量重抓
 
 ### 部署
 
-- 推送到 `main` → GitHub Actions → Ubuntu runner 跑 `npm install` + `npm run build` + pagefind 索引 → 上传 dist/ → 发布 wizardhehejun.github.io
+- 推送到 `main` → GitHub Actions → Ubuntu runner 跑 `npm install` + `npm run build` + pagefind 索引 → 上传 dist/ → 发布到 GitHub Pages
 - 约 40-50 秒完成
 - Node 22+ 必须显式指定（不是 20）
 
@@ -503,14 +503,6 @@ npm run refresh-og --force   # 全量重抓
 ### Push 后
 - [ ] `gh run list` 看部署状态
 - [ ] 上线 → 通知用户强刷（Ctrl+Shift+R）
-
-## 用户 / GitHub 信息
-
-- 用户名：`WizardHeHeJun`（仓库名大小写敏感）
-- 仓库：`https://github.com/WizardHeHeJun/WizardHeHeJun.github.io`
-- 哔哩哔哩：https://space.bilibili.com/40752109
-- X：https://x.com/wizardhehejun
-- 这些链接写死在 `Header.astro` / `Footer.astro` 的 SVG `<a>` 里
 
 ## Resources
 

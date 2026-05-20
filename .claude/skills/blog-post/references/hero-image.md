@@ -41,23 +41,27 @@
 - `<slug>` = 博文文件名去掉 `.md` 后缀（如 `foo-bar.md` → 图 `foo-bar.jpg`）
 - `<ext>` = 保留源扩展名（`.jpg` / `.png` / `.webp` 都可，Astro Image 都吃）
 
-**Windows / PowerShell 命令**：
+**前提**：cwd 在项目根目录。所有路径都用相对路径写。
+
+**PowerShell**：
 
 ```powershell
-# 本地文件
-Copy-Item "C:\Users\xxx\Downloads\source.jpg" "D:\bot\my-blog\src\assets\blog\<slug>.jpg"
+# 本地文件（用户给的源路径填到 $source）
+Copy-Item "<用户给的源路径>" "src/assets/blog/<slug>.jpg"
 
 # URL（curl）
-curl -o "D:\bot\my-blog\src\assets\blog\<slug>.jpg" "https://example.com/img.jpg"
+curl -o "src/assets/blog/<slug>.jpg" "https://example.com/img.jpg"
 ```
 
-**Bash 命令**（如果你在 Git Bash / WSL 里）：
+**Bash**（Git Bash / WSL）：
 
 ```bash
-cp "/c/Users/xxx/Downloads/source.jpg" "/d/bot/my-blog/src/assets/blog/<slug>.jpg"
+cp "<用户给的源路径>" "src/assets/blog/<slug>.jpg"
 # 或
-curl -o "/d/bot/my-blog/src/assets/blog/<slug>.jpg" "https://example.com/img.jpg"
+curl -o "src/assets/blog/<slug>.jpg" "https://example.com/img.jpg"
 ```
+
+**用户给的源路径**可能是任何形式（绝对路径如 `C:\Users\xxx\...`、相对路径、URL）——按 §A.1 接收，按原样填进 source 位置。**目标路径恒为相对的 `src/assets/blog/<slug>.<ext>`**。
 
 **放置后再 Read 一次目标文件**，确认拷贝成功 + 内容正确。
 

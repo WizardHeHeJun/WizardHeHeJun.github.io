@@ -32,7 +32,7 @@
 
 ## Markdown 扩展（正文里能用）
 
-除了标准 GFM markdown 外，my-blog 通过 remark 插件添加了下面这些扩展：
+除了标准 GFM markdown 外，本项目通过 remark 插件添加了下面这些扩展：
 
 ### Shoka Directives（6 种 callout/容器）
 
@@ -111,7 +111,7 @@ Shiki 高亮主题：`github-light`。几乎所有主流语言都支持（js/ts/
 
 ### Markdown 表格
 
-标准 GFM 表格语法。my-blog 自动套了样式：
+标准 GFM 表格语法。本项目自动套了样式：
 - 表头粉色底 + 字重加粗 + 字距小
 - 首列加微底色当行标签
 - 列与列之间淡分隔

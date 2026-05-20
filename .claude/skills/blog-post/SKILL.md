@@ -1,11 +1,15 @@
 ---
 name: blog-post
-description: 帮助在个人博客（Astro 6 + GitHub Pages）创建新博文。三种入口（CMS 浏览器 / CLI 菜单 / npm run new），引导填 frontmatter（5 类枚举分类 + 标签 + 置顶 + 草稿），按文章类型给结构模板，主动建议视觉元素（mermaid / 表格 / Shoka directives）和内容插入（行内图 / figure / link card / 引用块），辅助找 hero 图（用户已有图 / Safebooru 二选一），重要修改前提示 backup，最后跑 build + 提示 git push。使用场景：写一篇博文、写博客、新博文、记录一下、想发个 post、new post、create blog post。只在 d:/bot/my-blog 项目内工作。
+description: 帮助在 Astro 6 + GitHub Pages 个人博客项目创建新博文。三种入口（CMS 浏览器 / CLI 菜单 / npm run new），引导填 frontmatter（5 类枚举分类 + 标签 + 置顶 + 草稿），按文章类型给结构模板，主动建议视觉元素（mermaid / 表格 / Shoka directives）和内容插入（行内图 / figure / link card / 引用块），辅助找 hero 图（用户已有图 / Safebooru 二选一），重要修改前提示 backup，最后跑 build + 提示 git push。使用场景：写一篇博文、写博客、新博文、记录一下、想发个 post、new post、create blog post。
 ---
 
 # Blog Post Skill
 
-帮助用户在博客（Astro 6 + GitHub Pages，玻璃风视觉设计）创建 / 编辑博文。仅当 cwd 是 `d:/bot/my-blog` 时启用。
+帮助用户在博客（Astro 6 + GitHub Pages，玻璃风视觉设计）创建 / 编辑博文。
+
+**启用条件**：本 skill 是 project-scoped（位于 `.claude/skills/`），Claude Code 在含本 skill 的项目目录内自动加载——无需额外校验。如果想做兜底自检，确认 cwd 或祖先目录含 `src/content.config.ts` + `src/content/blog/` 即可。
+
+下文所有命令默认在**项目根目录**下执行（cwd = project root）。所有路径都用**相对路径**写，不写绝对路径（避免锁死到具体机器）。
 
 **定位**：这是个**写博客**的 skill——管的是"怎么帮用户写好一篇博文"，不管"代码怎么写"。代码层面的约定独立维护，这里只关注博文工作流和博文功能。
 

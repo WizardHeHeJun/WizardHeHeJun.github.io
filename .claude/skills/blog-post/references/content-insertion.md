@@ -60,10 +60,10 @@ markdown 里引用：
 跟 hero 图同套（见 hero-image.md §A.1）：本地绝对路径 / 相对路径 / URL / 截图 / 模糊描述。处理步骤：
 
 1. **Read 工具看一眼图**——确认能开、内容对得上、不是糊掉的占位
-2. **复制 / 下载到目标路径**：
+2. **复制 / 下载到目标路径**（cwd 必须在项目根目录；目标用相对路径）：
    ```powershell
-   # PowerShell（用户提供本地路径）
-   Copy-Item "C:\Users\xxx\Downloads\source.jpg" "D:\bot\my-blog\src\assets\blog\<slug>-<n>.jpg"
+   # PowerShell（用户给的源路径按原样填）
+   Copy-Item "<用户给的源路径>" "src/assets/blog/<slug>-<n>.jpg"
 
    # 或用 curl 拉 URL
    curl -o "src/assets/blog/<slug>-<n>.jpg" "https://example.com/img.jpg"
@@ -116,7 +116,7 @@ npm run refresh-og -- --force   # 全量重抓
 
 **抓不到时**：Link Card 降级为纯文本链接，**不会断图**。
 
-**反模式**：不要给自己博客的 URL 包 Link Card（如 `https://wizardhehejun.github.io/blog/xxx/`）——用 `[文章名](/blog/<slug>/)` 行内链接更顺。
+**反模式**：不要给**自己博客**的 URL 包 Link Card（站内已有更顺的链接形态）——用 `[文章名](/blog/<slug>/)` 行内相对链接，路径短、不依赖 OG 抓取、永远不会断。
 
 ## 引用块（blockquote）
 
