@@ -172,6 +172,51 @@ input {
 table {
 	width: 100%;
 }
+/* .prose 表格基础样式：玻璃风兼容的轻量边框 + 表头强调
+   原因：默认 markdown 表格无任何 border/padding，渲染出来就是几列纯文本，
+   读者看不出「这是表格」。给一组克制的视觉语言：表头粉色底 + 双线分隔 + 行边线。 */
+.prose table {
+	border-collapse: collapse;
+	margin: 1.2em 0;
+	font-size: 0.95em;
+}
+.prose table th,
+.prose table td {
+	padding: 0.6em 0.9em;
+	text-align: left;
+	vertical-align: top;
+	line-height: 1.6;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+	/* 列与列之间的极淡竖分隔——形成轻量网格感，扫读时更容易跟住列 */
+	border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+.prose table th:last-child,
+.prose table td:last-child {
+	border-right: none;
+}
+.prose table th {
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	color: rgb(var(--black));
+	/* 中性深一点的玻璃底——比行有明显对比，但不靠彩色 */
+	background: rgba(0, 0, 0, 0.05);
+	border-bottom: 2px solid rgba(0, 0, 0, 0.22);
+}
+/* 首列做「行标签」差异化：微底色 + 加粗，让读者第一眼能区分「这一行讲的什么」 */
+.prose table tbody td:first-child {
+	font-weight: 600;
+	color: rgb(var(--black));
+	background: rgba(0, 0, 0, 0.025);
+}
+.prose table tbody tr:last-child td {
+	border-bottom: none;
+}
+.prose table tbody tr {
+	transition: background 0.18s ease;
+}
+.prose table tbody tr:hover {
+	background: rgba(255, 255, 255, 0.3);
+}
 /* ≤640 窄屏：表格降级为横向滚动容器
    原因：CSS auto-layout 在 viewport 不够时只会均分列宽，长 inline code（如路径）
    会霸占大部分宽度，把「知识库」这种 3-4 字标题挤成单字符竖排。
