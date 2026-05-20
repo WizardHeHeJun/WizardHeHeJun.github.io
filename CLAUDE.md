@@ -730,6 +730,29 @@ shiki 输出 `<pre class="astro-code" data-language="xxx">`。叠加层视觉：
 
 shiki theme：必须改成 `github-light`（`astro.config.mjs` 的 `markdown.shikiConfig`），默认 `github-dark` 在玻璃白底反差差。
 
+**致命架构坑：absolute 装饰 + 横向滚动必须分层** —— 之前 `pre.astro-code` 同时承担「装饰锚点」和「滚动容器」两个角色，导致窄屏代码块横向滚动时**3 圆点 / lang 标签 / 「放大-复制」按钮一起被滚走**。
+
+CSS 规范：`position: absolute` 元素的定位上下文是**滚动内容的 padding box**，不是可视窗口。容器滚多远，绝对定位子元素就跟着漂多远——只有 `box-shadow inset`（容器自身绘制的背景）才纹丝不动，所以视觉上看起来「灰条还在，但按钮没了」。
+
+**修法**（已应用到 [global.css](src/styles/global.css)）：把滚动从外层下放到内层，pre 做不动的装饰外壳，code 做真正滚动的内容区：
+
+```css
+pre.astro-code {
+  position: relative;
+  overflow: hidden;            /* 外壳不滚 → 绝对装饰永远在角落 */
+  box-shadow: inset 0 36px 0 #ecedef, ...;
+}
+pre.astro-code > code {
+  display: block;              /* 关键：code 默认 inline，必须改 block */
+  overflow-x: auto;            /* 滚动只在内层发生 */
+  padding-bottom: 2px;         /* 滚动条紧贴底边 */
+}
+```
+
+注入 `.code-actions` 的 JS 必须保持 `pre.insertBefore(actions, pre.firstChild)`——是 pre 的直接子级（与 code 平级），不要 append 到 code 内。
+
+**通用规则**：任何「装饰条 + 横向滚动内容」组合（macOS 窗口风代码块、左固定首列的横向表格、时间轴 ticker），都要做这种「外壳/内容」分层。**滚动容器不当装饰锚点**，是写这类组件的第一条戒律。
+
 ### 44. TOC 卡尺寸：JS 接管 `height`，CSS 不要留 `max-height` fallback
 
 TOC fixed 侧栏的高度跟 viewport + header 状态联动：

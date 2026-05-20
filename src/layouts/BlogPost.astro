@@ -527,6 +527,50 @@ const {
 					init();
 				}
 			})();
+
+			/* —— 窄屏表格滚动状态：给 .prose table 加 is-scrollable / at-start / at-end，
+			   配合 global.css 的 mask-image 实现边缘渐隐提示。
+			   原因：iOS Safari 隐藏滚动条，用户不知能滑——渐隐边缘是关键 UX 提示。 */
+			(function setupTableScrollHints() {
+				function refresh(table) {
+					const scrollable = table.scrollWidth > table.clientWidth + 1;
+					table.classList.toggle('is-scrollable', scrollable);
+					if (!scrollable) {
+						table.classList.remove('at-start', 'at-end');
+						return;
+					}
+					const atStart = table.scrollLeft <= 1;
+					const atEnd = table.scrollLeft >= table.scrollWidth - table.clientWidth - 1;
+					table.classList.toggle('at-start', atStart);
+					table.classList.toggle('at-end', atEnd);
+				}
+				function init() {
+					document.querySelectorAll('.prose table').forEach((table) => {
+						if (table.dataset.scrollHintInit) return;
+						table.dataset.scrollHintInit = '1';
+						refresh(table);
+						table.addEventListener('scroll', () => refresh(table), { passive: true });
+					});
+				}
+				if (document.readyState === 'loading') {
+					document.addEventListener('DOMContentLoaded', init);
+				} else {
+					init();
+				}
+				/* viewport 变化也要重算（旋转屏 / 调整窗口） */
+				let raf = 0;
+				window.addEventListener(
+					'resize',
+					() => {
+						if (raf) return;
+						raf = requestAnimationFrame(() => {
+							raf = 0;
+							document.querySelectorAll('.prose table').forEach(refresh);
+						});
+					},
+					{ passive: true }
+				);
+			})();
 		</script>
 	</body>
 </html>

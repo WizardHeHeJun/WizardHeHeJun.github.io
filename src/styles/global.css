@@ -130,21 +130,21 @@ h6 {
 	line-height: 1.2;
 }
 h1 {
-	/* 响应式：移动 ~1.7em（27px @ 16px base） → 桌面 3.052em（49px）
-	   防止长中文标题在 ≤640 视口下挤成 5-6 行 */
-	font-size: clamp(1.7em, 1.1em + 2.6vw, 3.052em);
+	/* 响应式：移动 ~1.4em（22px @ 16px base） → 桌面 2.4em（48px @ 20px base）
+	   中文标题专用：避免桌面端压顶 + 窄屏不挤行 */
+	font-size: clamp(1.4em, 0.9em + 2.1vw, 2.4em);
 }
 h2 {
-	font-size: clamp(1.5em, 1em + 2vw, 2.441em);
+	font-size: clamp(1.2em, 0.8em + 1.2vw, 1.65em);
 }
 h3 {
-	font-size: clamp(1.3em, 0.95em + 1.4vw, 1.953em);
+	font-size: clamp(1.08em, 0.78em + 0.85vw, 1.35em);
 }
 h4 {
-	font-size: 1.563em;
+	font-size: 1.3em;
 }
 h5 {
-	font-size: 1.25em;
+	font-size: 1.15em;
 }
 strong,
 b {
@@ -171,6 +171,52 @@ input {
 }
 table {
 	width: 100%;
+}
+/* ≤640 窄屏：表格降级为横向滚动容器
+   原因：CSS auto-layout 在 viewport 不够时只会均分列宽，长 inline code（如路径）
+   会霸占大部分宽度，把「知识库」这种 3-4 字标题挤成单字符竖排。
+   修法：display: block + overflow-x: auto，宁可让表格溢出后滚，也不要被压成竖排。
+   每个 cell 给 5em min-width 兜底——短标题至少能成一行。
+   滚动提示：mask-image 边缘渐隐——iOS Safari 默认隐藏滚动条，没视觉提示用户不知道能滑；
+   配 BlogPost.astro 的 JS 给 table 加 .is-scrollable / .at-start / .at-end 状态类。 */
+@media (max-width: 640px) {
+	.prose table {
+		display: block;
+		max-width: 100%;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+	.prose table th,
+	.prose table td {
+		min-width: 5em;
+	}
+	/* 能滚 + 停在最左：右边渐隐（提示右边有内容） */
+	.prose table.is-scrollable.at-start {
+		-webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+		mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+	}
+	/* 能滚 + 中间位置：两边都渐隐 */
+	.prose table.is-scrollable:not(.at-start):not(.at-end) {
+		-webkit-mask-image: linear-gradient(
+			to right,
+			transparent 0%,
+			black 28px,
+			black calc(100% - 28px),
+			transparent 100%
+		);
+		mask-image: linear-gradient(
+			to right,
+			transparent 0%,
+			black 28px,
+			black calc(100% - 28px),
+			transparent 100%
+		);
+	}
+	/* 能滚 + 滚到底：左边渐隐 */
+	.prose table.is-scrollable.at-end {
+		-webkit-mask-image: linear-gradient(to right, transparent 0%, black 28px, black 100%);
+		mask-image: linear-gradient(to right, transparent 0%, black 28px, black 100%);
+	}
 }
 img {
 	max-width: 100%;
@@ -202,13 +248,20 @@ pre.astro-code {
 	padding: 2.6em 1.4em 1.2em !important;
 	border-radius: 10px;
 	border: 1px solid rgba(0, 0, 0, 0.08);
-	/* 长代码行在 pre 内部横向滚动；不加这个 pre 会被内容撑宽，
-	   把整页推到 viewport 外，触发文档级横向滚动 → header 露底 */
-	overflow-x: auto;
+	/* 关键：pre 自己 NOT overflow——否则横向滚动时 ::before/::after/.code-actions
+	   这些 absolute 装饰会跟着内容一起漂走（CSS 规范：absolute 锚在 scroll 内容的
+	   padding box，不是可视窗口）。把滚动下放给内层 code，pre 做不动的外壳。 */
+	overflow: hidden;
 	box-shadow:
 		inset 0 36px 0 #ecedef,
 		inset 0 36px 0 0.5px rgba(0, 0, 0, 0.06),
 		0 4px 16px rgba(31, 38, 135, 0.08);
+}
+pre.astro-code > code {
+	display: block;
+	overflow-x: auto;
+	/* 让滚动条紧贴底边而不是悬在内容中间 */
+	padding-bottom: 2px;
 }
 pre.astro-code::before {
 	content: '';
