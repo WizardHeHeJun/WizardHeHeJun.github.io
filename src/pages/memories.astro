@@ -140,6 +140,9 @@ const memories: Memory[] = [...(memoriesData as Memory[])].sort(
 			}
 
 			@media (max-width: 640px) {
+				main {
+					width: min(1080px, 100% - 0.8em);
+				}
 				.memory-grid {
 					grid-template-columns: 1fr;
 					gap: 1em;

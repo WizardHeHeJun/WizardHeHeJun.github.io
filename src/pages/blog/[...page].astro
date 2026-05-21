@@ -269,6 +269,12 @@ const postsWithStats = page.data.map((p) => ({
 			}
 			/* —— 移动 (≤640)：图上文下，所有卡片统一 —— */
 			@media (max-width: 640px) {
+				main {
+					width: min(1100px, 100% - 0.8em);
+					padding: 1em 0.4em;
+					grid-template-columns: 1fr;
+					gap: 1em;
+				}
 				.posts-card {
 					padding: 1.2em 1em;
 				}

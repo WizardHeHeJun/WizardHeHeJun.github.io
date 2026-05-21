@@ -313,6 +313,13 @@ function pickDesc(f: Friend): string {
 				margin-top: 2em;
 			}
 
+			/* —— 移动：收窄左右留白，贴近屏幕边缘 —— */
+			@media (max-width: 640px) {
+				main {
+					width: min(960px, 100% - 0.8em);
+				}
+			}
+
 			/* —— 大屏：放宽内容范围 —— */
 			@media (min-width: 1400px) {
 				main {

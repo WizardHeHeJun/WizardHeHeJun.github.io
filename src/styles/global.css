@@ -432,7 +432,8 @@ hr {
 }
 @media (max-width: 640px) {
 	main {
-		padding: 1.2em 1em;
+		width: min(720px, 100% - 0.8em);
+		padding: 1.4em 1em;
 	}
 }
 
