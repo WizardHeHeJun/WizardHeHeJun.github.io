@@ -240,6 +240,24 @@ JS 接管尺寸时**删掉 CSS 的 max-height fallback**——viewport 小时 CS
 
 `astro.config.mjs` 必须设 `markdown.shikiConfig.theme: 'github-light'`。默认 `github-dark` 在玻璃白底反差太大。
 
+### 9. Mermaid 文本/标签必须双引号包裹
+
+Mermaid parser 对裸文本敏感——`from` / `to` / `end` / `class` / `graph` 等常见词在不同 diagram 类型里是保留字，撞上会渲染成「炸弹图 + Syntax error in text」。
+
+**规则**：节点文本和关系 label 一律用双引号包，无论看起来是否「无害」：
+
+```mermaid
+flowchart TB
+    A["开始"] --> B["处理"]
+erDiagram
+    projects ||--o{ modules : "has"
+    modules  ||--o{ module_relations : "from_module"
+```
+
+不要写 `A[开始]` 或 `: from`——前者大多数情况能过但偶发踩中保留字；后者必炸。
+
+同 entity-pair 多关系（如 `modules → module_relations` 画两条）必须用不同 label 区分，且 label 必须 quoted。
+
 ## 组件设计规范
 
 ### 命名与组织

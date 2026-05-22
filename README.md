@@ -131,7 +131,7 @@ updatedDate: 'May 14 2026'     # 可选，更新过显示「最后更新于」
 | `:::info / :::tip / :::warning / :::danger` | 四色 callout |
 | `:::spoiler` | 剧透块（默认隐藏，点击解锁） |
 | `:::fold[标题]` | 折叠块（原生 `<details>`） |
-| ` ```mermaid ` | 客户端渲染图表（lang 必须是 `mermaid`） |
+| ` ```mermaid ` | 客户端渲染图表（lang 必须是 `mermaid`）。节点文本和 label **一律双引号包**（`A["开始"]` / `: "from_module"`），避开保留字触发 Syntax error |
 | `![alt](src)` 独占一段且 alt 非空 | 自动转 `<figure>` + figcaption + lightbox |
 | 一行只有一个裸 URL | 自动转 OG 链接卡（数据源 `og-cache.json`） |
 

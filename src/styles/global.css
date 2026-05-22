@@ -419,7 +419,7 @@ blockquote {
 	border-left: 4px solid var(--accent);
 	padding: 0 0 0 20px;
 	margin: 0;
-	font-size: 1.333em;
+	font-size: 1.05em;
 }
 hr {
 	border: none;
@@ -714,6 +714,7 @@ body.figure-lightbox-open {
 	border-radius: 18px;
 	box-shadow: var(--glass-shadow);
 	overflow: hidden;
+	cursor: zoom-in; /* 整图可点放大，与 .prose-figure img 同语言 */
 }
 .prose .mermaid-figure .mermaid {
 	background: transparent;
@@ -735,6 +736,47 @@ body.figure-lightbox-open {
 		border-radius: 14px;
 		margin: 1.4em -0.4em;
 	}
+}
+
+/* —— Mermaid lightbox：仿 figure lightbox，但 transform 作用在 frame 上（让白色画框跟 SVG 一起缩放） —— */
+.mermaid-lightbox {
+	position: fixed;
+	inset: 4vh 4vw;
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none; /* 周围空白让 backdrop click 透过 */
+}
+.mermaid-lightbox-frame {
+	pointer-events: auto;
+	width: 92vw;
+	height: 90vh;
+	box-sizing: border-box;
+	padding: 1.4em 1.8em;
+	background: rgba(255, 255, 255, 0.97);
+	border-radius: 14px;
+	box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+	cursor: zoom-in;
+	transform-origin: center center;
+	transition: transform 0.18s ease;
+	user-select: none;
+	overflow: hidden;
+}
+.mermaid-lightbox-frame svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	max-width: 100%;
+	max-height: 100%;
+	-webkit-user-drag: none;
+}
+.mermaid-lightbox-frame.is-zoomed {
+	cursor: grab;
+}
+.mermaid-lightbox-frame.is-dragging {
+	cursor: grabbing;
+	transition: none;
 }
 
 /* ============================================================
