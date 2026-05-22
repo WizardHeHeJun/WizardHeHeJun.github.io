@@ -46,9 +46,9 @@
 
 ### 工作流工具
 
-- 🌸 **`bloom` CLI** —— 自家命令行入口（npm install 后 `npx bloom` 直接用），无参进交互菜单，带子命令直接跑：`bloom new` / `bloom cms` / `bloom refresh-og` / `bloom backup`...
-- 📝 **本地浏览器 CMS** —— `bloom cms` 启动，端口 4322，仅 `127.0.0.1` 绑定 + Host 头白名单
-- 🗃️ **备份 / 还原** —— `bloom backup` / `bloom restore`，tar.gz + 内嵌 manifest，标准（KB 级文本）/ 完整（含图片资产）双模式，路径安全校验防 zip-slip
+- 🌸 **`stardust` CLI** —— 自家命令行入口（npm install 后 `npx stardust` 直接用），无参进交互菜单，带子命令直接跑：`stardust new` / `stardust cms` / `stardust refresh-og` / `stardust backup`...
+- 📝 **本地浏览器 CMS** —— `stardust cms` 启动，端口 4322，仅 `127.0.0.1` 绑定 + Host 头白名单
+- 🗃️ **备份 / 还原** —— `stardust backup` / `stardust restore`，tar.gz + 内嵌 manifest，标准（KB 级文本）/ 完整（含图片资产）双模式，路径安全校验防 zip-slip
 - 🎵 **音乐播放器** —— APlayer + MetingJS 网易云歌单，固定右下角
 
 ---
@@ -88,14 +88,14 @@ npm run dev      # http://localhost:4321/
 
 ```powershell
 # A. 交互菜单（推荐 —— 可顺手备份 / 还原 / 刷 OG）
-npx bloom
+npx stardust
 
 # B. 直接新建（菜单的「新建」也走它）
-npx bloom new    # 交互输入：标题 / slug / 分类 / 标签 / 置顶 / 描述
+npx stardust new    # 交互输入：标题 / slug / 分类 / 标签 / 置顶 / 描述
                  # 生成 src/content/blog/<slug>.md（含注释掉的 heroImage 行）
 
 # C. 浏览器写作
-npx bloom cms    # 端口 4322，首次自动 npm install cms/
+npx stardust cms    # 端口 4322，首次自动 npm install cms/
 ```
 
 加 hero 图 → 拖到 `src/assets/blog/<slug>.jpg`，取消 heroImage 注释。
@@ -185,10 +185,10 @@ stardust/
 │   ├── remark-figure.mjs            # 段落图转 figure + figcaption
 │   └── remark-link-card.mjs         # 裸 URL 转 OG 链接卡
 ├── scripts/
-│   ├── blog-cli.mjs                 # bloom CLI 入口（菜单 + 子命令分发，bin 注册名 = bloom）
-│   ├── new-post.mjs                 # 新建博文 scaffold（bloom new 委托）
-│   ├── run-cms.mjs                  # 启动浏览器 CMS（bloom cms 委托）
-│   ├── refresh-og.mjs               # 抓友链 + 博文裸 URL OG meta（bloom refresh-og 委托）
+│   ├── blog-cli.mjs                 # stardust CLI 入口（菜单 + 子命令分发，bin 注册名 = stardust）
+│   ├── new-post.mjs                 # 新建博文 scaffold（stardust new 委托）
+│   ├── run-cms.mjs                  # 启动浏览器 CMS（stardust cms 委托）
+│   ├── refresh-og.mjs               # 抓友链 + 博文裸 URL OG meta（stardust refresh-og 委托）
 │   ├── gen-lqip.mjs                 # LQIP 生成（prebuild 自动跑）
 │   ├── gen-favicon.mjs              # favicon 生成（换头像后用）
 │   ├── crop-hero.mjs                # 竖图预裁脸居中横版
@@ -213,24 +213,24 @@ npm run build       # 生产构建到 dist/（prebuild 自动重生 LQIP）
 npm run preview     # 本地预览构建产物
 ```
 
-### 本项目自定义 CLI（`bloom`）
+### 本项目自定义 CLI（`stardust`）
 
-`npm install` 之后 `npx bloom` 直接可用——bin 链接已自动建立在 `./node_modules/.bin/bloom`。
+`npm install` 之后 `npx stardust` 直接可用——bin 链接已自动建立在 `./node_modules/.bin/stardust`。
 
 ```bash
-npx bloom                       # ⭐ 交互菜单：新建 / CMS / 刷 OG / 备份 / 还原 / 列表 / 清理
-npx bloom new                   # 直接新建博文
-npx bloom cms                   # 本地浏览器 CMS（端口 4322，仅 127.0.0.1）
-npx bloom refresh-og            # 抓 friends.json + 博文裸 URL 的 OG meta
-npx bloom refresh-og --force    # 全量重抓
-npx bloom backup                # 备份（交互选标准 / 完整）
-npx bloom restore               # 从备份还原（默认先备份当前状态）
-npx bloom list                  # 列出已有备份
-npx bloom clean                 # 清理旧备份
-npx bloom --help                # 子命令清单
+npx stardust                       # ⭐ 交互菜单：新建 / CMS / 刷 OG / 备份 / 还原 / 列表 / 清理
+npx stardust new                   # 直接新建博文
+npx stardust cms                   # 本地浏览器 CMS（端口 4322，仅 127.0.0.1）
+npx stardust refresh-og            # 抓 friends.json + 博文裸 URL 的 OG meta
+npx stardust refresh-og --force    # 全量重抓
+npx stardust backup                # 备份（交互选标准 / 完整）
+npx stardust restore               # 从备份还原（默认先备份当前状态）
+npx stardust list                  # 列出已有备份
+npx stardust clean                 # 清理旧备份
+npx stardust --help                # 子命令清单
 ```
 
-### 资源工具（直接跑脚本，无 bloom 子命令包装）
+### 资源工具（直接跑脚本，无 stardust 子命令包装）
 
 ```bash
 node scripts/gen-favicon.mjs    # 换头像后重新生成 favicon
@@ -241,7 +241,7 @@ node scripts/crop-hero.mjs      # 竖版人像图预裁为脸居中横版
 
 ## 🗃️ 备份 / 还原
 
-`npx bloom backup` 直接走入（或 `npx bloom` 菜单选「备份」）。两种粒度：
+`npx stardust backup` 直接走入（或 `npx stardust` 菜单选「备份」）。两种粒度：
 
 | 模式 | 内容 | 体积 |
 | :--- | :--- | :--- |
@@ -289,7 +289,7 @@ git push
 | 全屏背景图 | 替换 [src/assets/bg.jpg](src/assets/bg.jpg) |
 | favicon | 替换 [src/assets/elysia.png](src/assets/elysia.png) → 跑 `node scripts/gen-favicon.mjs` |
 | 音乐歌单 | [src/components/MusicPlayer.astro](src/components/MusicPlayer.astro) 的 `playlistId`（网易云歌单 ID） |
-| 友链 | [src/data/friends.json](src/data/friends.json) → 改完跑 `npx bloom refresh-og` |
+| 友链 | [src/data/friends.json](src/data/friends.json) → 改完跑 `npx stardust refresh-og` |
 | 回忆相册 | [src/data/memories.json](src/data/memories.json) + 图片丢 `public/memories/` |
 | 画板色板 / 工具 | [src/pages/whiteboard.astro](src/pages/whiteboard.astro) 顶部 `.swatches` HTML 块 |
 | 首页 Now 区 | [src/pages/index.astro](src/pages/index.astro) 的 `.now-grid` 块 |
@@ -310,7 +310,7 @@ git push
 1. **改完必须 `npm run build` 验证再 push** —— CI 失败的代价远高于本地多跑 30 秒
 2. **视觉改动 push 后强刷** —— `Ctrl+Shift+R`，默认刷新对图片 / 字体不奏效
 3. **响应式只用四档断点**：`640 / 960 / 1280 / 1400`（+ 1800 大屏，720 给汉堡触发） —— 不要发明 720 / 1024 之类
-4. **`friends.json` 改完一定跑 `npx bloom refresh-og`** —— OG 数据要 commit 进 git，CI 不上网
+4. **`friends.json` 改完一定跑 `npx stardust refresh-og`** —— OG 数据要 commit 进 git，CI 不上网
 5. **装新 npm 包前看 install hook** —— `grep -E 'preinstall|postinstall' node_modules/<pkg>/package.json`；obfuscated 代码 + crypto + fetch + 强制非主流 runtime = 直接否决
 6. **二次元图必须实际看一眼再用** —— LLM 基于 tag 推断常常出错（侧脸 / 背影 / 水印混进来）
 

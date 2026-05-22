@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// bloom —— 星屑 Stardust 自家 CLI：新建博文 / CMS / OG 刷新 / 备份 / 还原 / 列表 / 清理
+// stardust —— 星屑 Stardust 自家 CLI：新建博文 / CMS / OG 刷新 / 备份 / 还原 / 列表 / 清理
 // 设计：菜单 + 子命令双入口
-//   - 无参（`bloom`）          → 进交互菜单（@clack/prompts）
-//   - 有子命令（`bloom new`）  → 直接执行对应 handler，不进菜单
+//   - 无参（`stardust`）          → 进交互菜单（@clack/prompts）
+//   - 有子命令（`stardust new`）  → 直接执行对应 handler，不进菜单
 //   - new / cms / refresh-og 委托给已有独立脚本（spawn 透传 stdio），不动它们内部逻辑
 //   - backup / restore / list / clean 直接调 lib/backup.mjs
 import * as p from '@clack/prompts';
@@ -180,11 +180,11 @@ async function handleClean() {
 
 function printHelp() {
 	console.log(`
-bloom —— 星屑 Stardust 自家工具
+stardust —— 星屑 Stardust 自家工具
 
 用法:
-  bloom                    进交互菜单
-  bloom <command> [args]   直接执行子命令
+  stardust                    进交互菜单
+  stardust <command> [args]   直接执行子命令
 
 子命令:
   new                      新建博文（交互式输入标题/分类/标签/置顶）
@@ -197,9 +197,9 @@ bloom —— 星屑 Stardust 自家工具
   help, --help, -h         显示此帮助
 
 示例:
-  bloom new                # 直接新建一篇博文
-  bloom refresh-og --force # 全量重抓 OG meta
-  bloom                    # 不确定要做什么？进菜单慢慢挑
+  stardust new                # 直接新建一篇博文
+  stardust refresh-og --force # 全量重抓 OG meta
+  stardust                    # 不确定要做什么？进菜单慢慢挑
 `);
 }
 
@@ -270,7 +270,7 @@ async function main() {
 	const handler = handlers[cmd];
 	if (!handler) {
 		console.error(`未知子命令: ${cmd}`);
-		console.error('用 bloom --help 查看可用命令');
+		console.error('用 stardust --help 查看可用命令');
 		process.exit(1);
 	}
 
