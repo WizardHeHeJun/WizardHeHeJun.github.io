@@ -108,8 +108,8 @@ https://github.com/withastro/astro
 **前置依赖**：要让 OG 卡有数据，先把 URL 加进缓存：
 
 ```bash
-npm run refresh-og              # 增量抓未缓存的 URL
-npm run refresh-og -- --force   # 全量重抓
+stardust refresh-og             # 增量抓未缓存的 URL
+stardust refresh-og --force     # 全量重抓
 ```
 
 或编辑 `src/data/og-cache.json` 手填条目。

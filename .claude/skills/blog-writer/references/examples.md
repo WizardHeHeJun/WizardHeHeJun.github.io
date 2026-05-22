@@ -4,7 +4,7 @@
 
 ## 示例 1：用户给了主题——默认走 CMS 路径
 
-**用户**：「想写一篇博文，记录一下今天用 npm run new 这个 CLI 的体验」
+**用户**：「想写一篇博文，记录一下今天用 stardust new 这个 CLI 的体验」
 
 **你的步骤**（对应 SKILL.md 工作流 Step 1-5）：
 
@@ -15,7 +15,7 @@
 
 问入口：
 > 这篇我建议走 CMS（实时预览 + 表单填字段，对长文友好）。
-> 或者你想用 CLI 菜单 / npm run new 直接 scaffold？
+> 或者你想用 CLI 菜单（stardust）/ stardust new 直接 scaffold？
 
 问视觉信号：
 > 要置顶吗（教程类适合 featured）？
@@ -29,7 +29,7 @@
 
 ```powershell
 # 先确保 cwd 在项目根目录
-npm run cms
+stardust cms
 ```
 
 提示用户打开 http://localhost:4322，左侧 form 填 title / description / category=技术笔记 / tags=`cli, scaffold, astro` / 勾 ☑ draft。
@@ -74,7 +74,7 @@ npm run cms
 git add src/content/blog/<slug>.md \
        src/assets/blog/<slug>.jpg \
        src/data/lqip.json
-git commit -m "post: npm run new 用起来如何"
+git commit -m "post: stardust new 用起来如何"
 git push
 gh run list --workflow "Deploy to GitHub Pages" --limit 1  # 看部署
 ```
@@ -84,14 +84,14 @@ gh run list --workflow "Deploy to GitHub Pages" --limit 1  # 看部署
 如果用户不在 TTY（如你在 Bash 工具里替走）：
 
 ```bash
-printf 'npm run new 用起来如何\nnpm-run-new-review\n2\ncli,scaffold,astro\nn\n一次 30 分钟把博文创建摩擦清零的体验\n' | npm run new
+printf 'stardust new 用起来如何\nstardust-new-review\n2\ncli,scaffold,astro\nn\n一次 30 分钟把博文创建摩擦清零的体验\n' | stardust new
 ```
 
 ## 示例 2：用户没头绪，不要急着 scaffold
 
 **用户**：「想写点什么但不知道写啥」
 
-**你**：**不调** `npm run new`，**不开** CMS，**不打开** CLI 菜单。先聊。问：
+**你**：**不调** `stardust new`，**不开** CMS，**不打开** CLI 菜单。先聊。问：
 
 - 「最近做了什么 / 学了什么 / 烦什么 / 想感谢谁？」
 - 「最近有没有想跟某个人分享但没机会说的事？」
@@ -210,7 +210,7 @@ git push
 
 ### 场景：用户写到一半要停
 
-主动跑 `npm run cms` form 里勾 ☑ draft（或在 frontmatter 加 `draft: true`）。可以正常 commit + push 到主干，线上不显示。
+主动跑 `stardust cms` form 里勾 ☑ draft（或在 frontmatter 加 `draft: true`）。可以正常 commit + push 到主干，线上不显示。
 
 完成那天：取消 draft → `npm run build` → commit message 从 `draft:` 改成 `post:` → push。
 
@@ -244,14 +244,14 @@ https://github.com/withastro/astro
 
 中间裸 URL **单独一段** → 自动渲染成 OG 卡（标题 + 描述 + 缩略图）。
 
-**前置**：跑 `npm run refresh-og` 抓 OG 数据，否则线上回退纯文本链接。
+**前置**：跑 `stardust refresh-og` 抓 OG 数据，否则线上回退纯文本链接。
 
 ### 场景：替换或大改 hero 图
 
 旧图会被覆盖，Astro Image 优化的 webp 也会全部重生。**先 backup**：
 
 ```bash
-npm run cli  # → 📦 备份 → 🗜 完整（含 src/assets/blog/）
+stardust backup  # → 选 🗜 完整（含 src/assets/blog/）
 ```
 
 完整备份 ~13 MB，跑 ~3 秒。新图替换后 `npm run build` 验证再 push。

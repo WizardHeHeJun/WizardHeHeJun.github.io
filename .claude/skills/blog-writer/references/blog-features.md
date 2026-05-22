@@ -86,8 +86,8 @@ graph TD
 
 **数据来源**：`src/data/og-cache.json`，build 时不联网。需要预先跑：
 ```bash
-npm run refresh-og        # 增量抓取未缓存的 URL
-npm run refresh-og -- --force  # 全量重抓
+stardust refresh-og          # 增量抓取未缓存的 URL
+stardust refresh-og --force  # 全量重抓
 ```
 
 抓不到时降级为纯文本链接，不会断图。
@@ -168,7 +168,7 @@ Shiki 高亮主题：`github-light`。几乎所有主流语言都支持（js/ts/
 2. **`updatedDate` 不是必填**——大改老文章时填上才会显示「最后更新于」；改完不填，博文页上没痕迹
 3. **`featured` 不只是排序优先**——还触发卡片视觉差异化（大卡 + 暖色 + 📌 徽章），适合教程类 / 重磅项目分享
 4. **Hero 图可以省**——但列表卡会空出图位，视觉残破。首篇 / 重要文章建议必传
-5. **Link Card 需要预抓 OG**——`src/data/og-cache.json` 是 build 时不联网的；想让裸 URL 渲染成 OG 卡，得先跑 `npm run refresh-og`
+5. **Link Card 需要预抓 OG**——`src/data/og-cache.json` 是 build 时不联网的；想让裸 URL 渲染成 OG 卡，得先跑 `stardust refresh-og`
 6. **代码块「放大」按钮**——所有 ```lang 代码块右上角自带，长代码示例时提醒读者「点这里全屏看」是 nice to have
 7. **Mermaid 节点名建议短**——长中文标签（> 15 字）会撑出画布；改英文短词或拆成多张图
 

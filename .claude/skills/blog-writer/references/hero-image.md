@@ -170,7 +170,7 @@ heroImage: '../../assets/blog/<slug>.jpg'
 
 路径相对于 `src/layouts/BlogPost.astro`，**不是**博文 .md 自身。
 
-- `npm run new` 生成的 frontmatter 里已有这一行（注释掉的 `# heroImage: ...`），加图后取消注释 + 改对扩展名
+- `stardust new` 生成的 frontmatter 里已有这一行（注释掉的 `# heroImage: ...`），加图后取消注释 + 改对扩展名
 - CMS 路径：左侧 form 的 heroImage 字段填同样的路径，Ctrl+S 保存
 - 手 Edit：直接改 frontmatter 那一行
 
