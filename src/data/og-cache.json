@@ -25,5 +25,13 @@
     "favicon": "https://mermaid.js.org/favicon.ico",
     "fetchedAt": "2026-05-19T09:54:00.001Z",
     "status": "ok"
+  },
+  "https://artemis2045.com": {
+    "url": "https://artemis2045.com",
+    "title": "Artemis2045",
+    "description": "A personal technical archive for backend systems, AI tooling, and durable notes.",
+    "favicon": "https://www.artemis2045.com/icon?a2f8d2456e328436",
+    "fetchedAt": "2026-06-09T02:33:14.657Z",
+    "status": "partial"
   }
 }
