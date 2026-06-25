@@ -250,8 +250,11 @@ const {
 					mermaid.initialize({
 						startOnLoad: false,
 						theme: 'base',
+						// useMaxWidth: false —— 关键。默认 true 会把窄图拉伸到容器满宽，节点被放大、两侧留大片空白；
+						// 关掉后图按自身固有尺寸渲染（CSS max-width:100% 仍兜底超宽图缩放）。配合更小的 fontSize / 间距让图更紧凑。
 						themeVariables: {
 							fontFamily: "'LXGW WenKai Screen', 'PingFang SC', sans-serif",
+							fontSize: '14px',
 							primaryColor: '#dde7ff',
 							primaryTextColor: '#222939',
 							primaryBorderColor: '#2337ff',
@@ -261,6 +264,8 @@ const {
 							noteBkgColor: '#fff7e6',
 							noteBorderColor: '#b8860b',
 						},
+						flowchart: { useMaxWidth: false, nodeSpacing: 34, rankSpacing: 30, padding: 8 },
+						sequence: { useMaxWidth: false },
 					});
 					await mermaid.run({ querySelector: '.prose .mermaid' });
 					// @ts-expect-error 在后续 <script is:inline> 中挂到 window 上

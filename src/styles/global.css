@@ -706,6 +706,9 @@ body.figure-lightbox-open {
    ============================================================ */
 .prose .mermaid-figure {
 	margin: 1.8em auto;
+	/* fit-content：卡片贴着图自身尺寸收窄并居中，避免窄图在满宽卡片里两侧留大片空白 */
+	width: fit-content;
+	max-width: 100%;
 	padding: 1.4em 1.6em;
 	background: var(--glass-bg);
 	backdrop-filter: var(--glass-blur);
