@@ -254,7 +254,7 @@ const {
 						// 关掉后图按自身固有尺寸渲染（CSS max-width:100% 仍兜底超宽图缩放）。配合更小的 fontSize / 间距让图更紧凑。
 						themeVariables: {
 							fontFamily: "'LXGW WenKai Screen', 'PingFang SC', sans-serif",
-							fontSize: '14px',
+							fontSize: '11px',
 							primaryColor: '#dde7ff',
 							primaryTextColor: '#222939',
 							primaryBorderColor: '#2337ff',
@@ -264,7 +264,7 @@ const {
 							noteBkgColor: '#fff7e6',
 							noteBorderColor: '#b8860b',
 						},
-						flowchart: { useMaxWidth: false, nodeSpacing: 34, rankSpacing: 30, padding: 8 },
+						flowchart: { useMaxWidth: false, nodeSpacing: 24, rankSpacing: 22, padding: 6 },
 						sequence: { useMaxWidth: false },
 					});
 					await mermaid.run({ querySelector: '.prose .mermaid' });
