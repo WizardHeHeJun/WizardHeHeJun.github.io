@@ -4,7 +4,7 @@ description: >-
   从这个博客抽出来的开源 Astro 6 模板，玻璃风骨架 + stardust CLI，clone 下来填几个占位符就能 push 到 GitHub
   Pages。
 pubDate: May 22 2026
-heroImage: ../../assets/blog/stardust.png
+heroImage: ../../assets/blog/stardust.jpg
 category: 项目分享
 tags:
   - Astro

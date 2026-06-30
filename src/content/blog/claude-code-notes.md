@@ -2,6 +2,7 @@
 title: Claude Code 实战沉淀：从 Agent 到 Skill 的全景指南
 description: 用 CC 的经验解耦——架构、SubAgent、Skill、MCP、Hooks 一篇看完。
 pubDate: May 22 2026
+heroImage: ../../assets/blog/claude-code-notes.jpg
 category: 技术笔记
 tags:
   - Claude Code
